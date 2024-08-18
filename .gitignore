@@ -26,6 +26,9 @@
 *.a
 *.lib
 
+# build directory because F it
+build
+
 # Executables
 *.exe
 *.out
