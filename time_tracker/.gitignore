@@ -45,6 +45,9 @@ CMakeLists.txt.user*
 # Vim temporary files
 .*.swp
 
+# build directory because we hate it
+build
+
 # Visual Studio generated files
 *.ib_pdb_index
 *.idb
