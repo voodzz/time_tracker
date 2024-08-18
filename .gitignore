@@ -27,7 +27,7 @@
 *.lib
 
 # build directory because F it
-build/
+time_tracker/build
 
 # Executables
 *.exe
