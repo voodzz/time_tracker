@@ -2,6 +2,7 @@
 #define TIMETRACKER_H
 
 #include <QWidget>
+#include <QTabWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
