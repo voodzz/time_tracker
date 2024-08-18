@@ -1,0 +1,50 @@
+/* black.qss */
+
+QWidget {
+    background-color: rgb(60, 60, 60);
+}
+
+/* side menu */
+QFrame#sideMenu {
+    background-color: rgb(30, 30, 30);
+    border: 1px solid #bdc3c7;
+}
+
+/* Buttons in side menu */
+#sideMenu QPushButton {
+    color: black;
+    border: 2px solid #2980b9;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #3498db;
+}
+
+#sideMenu QPushButton:hover {
+    background-color: #2980b9;
+}
+
+#sideMenu QPushButton:pressed {
+    background-color: #1c6d9e;
+}
+
+#sideMenu QLabel {
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+
+/* main menu button */
+QPushButton#menuButton {
+   border-radius: 25px;
+   border: 2px solid black;
+   background-color: #3498db;
+}
+
+QPushButton#menuButton:hover {
+   background-color: #2980b9;
+}
+
+QPushButton#menuButton:pressed {
+   background-color: #1c6d9e;
+   }
+

@@ -43,6 +43,8 @@ else()
     else()
         add_executable(time_tracker
             ${PROJECT_SOURCES}
+            qss/black.qss qss/white.qss
+            recources.qrc
         )
     endif()
 
