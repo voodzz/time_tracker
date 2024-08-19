@@ -28,10 +28,6 @@ public:
     TimeTracker(QWidget *parent = nullptr);
     ~TimeTracker();
 
-protected:
-    // Events
-    void paintEvent(QPaintEvent* event) override;
-
 private slots:
     //Style Slots
     void toggleStyle();
