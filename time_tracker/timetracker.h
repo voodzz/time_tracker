@@ -24,9 +24,13 @@ class TimeTracker : public QWidget
     Q_OBJECT
 
 public:
-    //Constructors & Destructors
+    // Constructors & Destructors
     TimeTracker(QWidget *parent = nullptr);
     ~TimeTracker();
+
+protected:
+    // Events
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
     //Style Slots
@@ -39,12 +43,12 @@ private:
     QPropertyAnimation *animation;
     QVBoxLayout *menuLayout; //Part of sideMenu
 
-    //Buttons
+    // Buttons
     QPushButton *option1;
     QPushButton *option2;
     QPushButton *styleButton;
 
-    //Style Regulator
+    // Style Regulator
     QString currentStyle;
 
     // Init Functions
@@ -54,9 +58,10 @@ private:
     void initQVBoxLayout();
     void initConnections();
 
-    //Style Functions
+    // Style Functions
     void applyStyle(const QString &styleFile);
-
+    void setStyleBlack();
+    void setStyleWhite();
 
 };
 #endif // TIMETRACKER_H

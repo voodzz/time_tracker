@@ -1,10 +1,15 @@
 #include "timetracker.h"
 #include "./ui_timetracker.h"
-
+#include <QPainter>
+#include <QResizeEvent>
+#include <QStyleOption>
 
 // ========================= Constructors & Destructors ===================
 TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTracker) {
     ui->setupUi(this);
+
+    // Window Icon
+    setWindowIcon(QIcon(":/icons/icons/program_icon.png"));
 
     initButtons();
     initMenues();
@@ -12,25 +17,36 @@ TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTrac
     setAnimations();
     initConnections();
 
-    // TODO: Create separate function(s) for this!!!
-    currentStyle = "black";
-    applyStyle(":/qss/black.qss");
-
+    // Dark theme by default
+    setStyleBlack();
 }
 
-TimeTracker::~TimeTracker()
-{
+TimeTracker::~TimeTracker() {
     delete ui;
+}
+
+// ========================== Events ==========================
+void TimeTracker::paintEvent(QPaintEvent *event) {
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    QWidget::paintEvent(event);
 }
 
 
 // ========================== Init Functions ==========================
-void TimeTracker::initButtons()
-{
+void TimeTracker::initButtons() {
     // Buttons in side menu
     option1 = new QPushButton("Option 1", ui->sideMenu);
     option2 = new QPushButton("Option 2", ui->sideMenu);
     styleButton = new QPushButton("Theme", ui->sideMenu);
+
+    // Setting cursor for every button
+    ui->menuButton->setCursor(Qt::PointingHandCursor);
+    option1->setCursor(Qt::PointingHandCursor);
+    option2->setCursor(Qt::PointingHandCursor);
+    styleButton->setCursor(Qt::PointingHandCursor);
 }
 
 void TimeTracker::setAnimations()
@@ -87,14 +103,23 @@ void TimeTracker::applyStyle(const QString &styleFile)
     }
 }
 
+void TimeTracker::setStyleBlack() {
+    applyStyle(":/styles/qss/black.qss");
+    currentStyle = "black";
+}
+
+void TimeTracker::setStyleWhite() {
+    applyStyle(":/styles/qss/white.qss");
+    currentStyle = "white";
+}
+
 
 void TimeTracker::toggleStyle()
 {
     if (currentStyle == "white") {
-        applyStyle(":/qss/black.qss");
-        currentStyle = "black";
+        setStyleBlack();
     } else {
-        applyStyle(":/qss/white.qss");
-        currentStyle = "white";
+        setStyleWhite();
     }
 }
+

@@ -1,7 +1,11 @@
-<!-- resources.qrc -->
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/styles">
         <file>qss/white.qss</file>
-	<file>qss/black.qss</file>
+        <file>qss/black.qss</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file>icons/program_icon.png</file>
+        <file>icons/menu_icon_darkTheme.png</file>
+        <file>icons/menu_icon_lightTheme.png</file>
     </qresource>
 </RCC>
