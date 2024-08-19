@@ -11,9 +11,10 @@ TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTrac
     // Window Icon
     setWindowIcon(QIcon(":/icons/icons/program_icon.png"));
 
+    initWidgets();
     initButtons();
-    initMenues();
-    initQVBoxLayout();
+    initLabels();
+    initLayouts();
     setAnimations();
     initConnections();
 
@@ -29,32 +30,56 @@ TimeTracker::~TimeTracker() {
 // ========================== Init Functions ==========================
 void TimeTracker::initButtons() {
     // Buttons in side menu
-    option1 = new QPushButton("Option 1", ui->sideMenu);
-    option2 = new QPushButton("Option 2", ui->sideMenu);
-    styleButton = new QPushButton("Theme", ui->sideMenu);
+    listButton = new QPushButton("List", sideMenu);
+    statButton = new QPushButton("Statistic", sideMenu);
+    settButton = new QPushButton("Setting", sideMenu);
+    styleButton = new QPushButton("Theme", sideMenu);
+
+    // Menu Button
+    menuButton = new QPushButton(this);
+    menuButton->setFixedSize(50,50);
+    menuButton->move(10, 10);
+    menuButton->setObjectName("menuButton");
 
     // Setting cursor for every button
-    ui->menuButton->setCursor(Qt::PointingHandCursor);
-    option1->setCursor(Qt::PointingHandCursor);
-    option2->setCursor(Qt::PointingHandCursor);
+    menuButton->setCursor(Qt::PointingHandCursor);
+    listButton->setCursor(Qt::PointingHandCursor);
+    statButton->setCursor(Qt::PointingHandCursor);
+    settButton->setCursor(Qt::PointingHandCursor);
     styleButton->setCursor(Qt::PointingHandCursor);
 }
 
 void TimeTracker::setAnimations()
 {
     // Animation for side menu
-    animation = new QPropertyAnimation(ui->sideMenu, "geometry");
+    animation = new QPropertyAnimation(sideMenu, "geometry");
     animation->setDuration(400); // Change number for change duration of animation (in ms)
 }
 
-void TimeTracker::initQVBoxLayout()
+void TimeTracker::initLabels()
 {
+    listLabel = new QLabel("This is List Page!", listPage);
+    statLabel = new QLabel("This is Statistic Page!", statPage);
+    settLabel = new QLabel("This is Settings Page!", settPage);
+}
+
+void TimeTracker::initLayouts()
+{
+    //Pages Layouts
+    listLayout = new QVBoxLayout(listPage);
+    listLayout->addWidget(listLabel);
+    statLayout = new QVBoxLayout(statPage);
+    statLayout->addWidget(statLabel);
+    settLayout = new QVBoxLayout(settPage);
+    settLayout->addWidget(settLabel);
+
 
     // Layout for side menu, idk what is it, but it neccessary
-    menuLayout = new QVBoxLayout(ui->sideMenu);
+    menuLayout = new QVBoxLayout(sideMenu);
     menuLayout->addSpacing(75);  // Make a space so that the menuButton doesn't overlap the sideMenu buttons
-    menuLayout->addWidget(option1);
-    menuLayout->addWidget(option2);
+    menuLayout->addWidget(listButton);
+    menuLayout->addWidget(statButton);
+    menuLayout->addWidget(settButton);
     menuLayout->addWidget(styleButton);
     menuLayout->addStretch(); // It does it beautiful :)
 }
@@ -62,23 +87,57 @@ void TimeTracker::initQVBoxLayout()
 void TimeTracker::initConnections()
 {
     // Connect a menuButton
-    connect(ui->menuButton, &QPushButton::clicked, [this]() {
-        if (ui->sideMenu->x() < 0) {
-            animation->setStartValue(QRect(-ui->sideMenu->width(), 0, 250, height()));
+    connect(menuButton, &QPushButton::clicked, [this]() {
+        if (sideMenu->x() < 0) {
+            animation->setStartValue(QRect(-sideMenu->width(), 0, 250, height()));
             animation->setEndValue(QRect(0, 0, 250, height()));
         } else {
             animation->setStartValue(QRect(0, 0, 250, height()));
-            animation->setEndValue(QRect(-ui->sideMenu->width(), 0, 250, height()));
+            animation->setEndValue(QRect(-sideMenu->width(), 0, 250, height()));
         }
         animation->start();
     });
+
     // Connect a styleButton
     connect(styleButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
+
+    //Connect a sideMenu buttons
+    connect(listButton, &QPushButton::clicked, this, [this]() {
+        stackedWidget->setCurrentIndex(0);
+    });
+
+    connect(statButton, &QPushButton::clicked, this, [this]() {
+        stackedWidget->setCurrentIndex(1);
+    });
+
+    connect(settButton, &QPushButton::clicked, this, [this]() {
+        stackedWidget->setCurrentIndex(2);
+    });
 }
 
-void TimeTracker::initMenues()
+void TimeTracker::initWidgets()
 {
-    ui->sideMenu->move(-ui->sideMenu->width(), 0);
+    //Pages
+    listPage = new QWidget(this);
+    listPage->setGeometry(0, 0, 1366, 768);
+    statPage = new QWidget(this);
+    settPage = new QWidget(this);
+
+    //Side Menu
+    sideMenu = new QWidget(this);
+    sideMenu->setGeometry(QRect(0,0, 250, 768));
+    sideMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    sideMenu->move(-sideMenu->width(), 0);
+    sideMenu->setObjectName("sideMenu");
+    sideMenu->setMinimumSize(250, 768);
+
+    //Stacked Widget
+    stackedWidget = new QStackedWidget(this);
+    stackedWidget->addWidget(listPage);
+    stackedWidget->addWidget(statPage);
+    stackedWidget->addWidget(settPage);
+    stackedWidget->setCurrentIndex(0);
+
 }
 
 

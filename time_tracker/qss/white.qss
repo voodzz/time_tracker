@@ -1,11 +1,11 @@
 /* black.qss */
 
-QWidget {
+#TimeTracker {
     background-color: #e6e6e6;
 }
 
 /* side menu */
-QFrame#sideMenu {
+#sideMenu {
     background-color: rgb(200, 200, 200);
     border: none;
 }

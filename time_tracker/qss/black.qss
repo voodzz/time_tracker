@@ -1,13 +1,13 @@
 /* black.qss */
 
-QWidget {
+#TimeTracker {
     background-color: #505050;
 }
 
 /* side menu */
-QFrame#sideMenu {
+#sideMenu {
     background-color: #3c3c3c;
-    border: none;
+    border: 0px;
 }
 
 /* Buttons in side menu */
@@ -37,4 +37,9 @@ QFrame#sideMenu {
 QPushButton#menuButton {
    border: none;
    background: url(:/icons/icons/menu_icon_darkTheme.png) no-repeat center center;
+}
+
+/* labels */
+QLabel {
+    font: 50px;
 }
