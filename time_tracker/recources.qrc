@@ -7,6 +7,9 @@
         <file>icons/program_icon.png</file>
         <file>icons/menu_icon_darkTheme.png</file>
         <file>icons/menu_icon_lightTheme.png</file>
+        <file>icons/list_icon_white.png</file>
+        <file>icons/stat_icon_white.png</file>
+        <file>icons/sett_icon_white.png</file>
     </qresource>
     <qresource prefix="/font">
         <file>font/VarelaRoundRegular.ttf</file>

@@ -19,6 +19,7 @@
     background-color: #262626;
     font-size: 16px;
     font-family: 'Varela Round';
+    qproperty-iconSize: 30px 30px;
 }
 
 #sideMenu QPushButton:hover {
@@ -34,6 +35,17 @@
     font-size: 14px;
 }
 
+#listButton {
+    qproperty-icon: url(:/icons/icons/list_icon_white.png);
+}
+
+#statButton {
+    qproperty-icon: url(:/icons/icons/stat_icon_white.png);
+}
+
+#settButton {
+    qproperty-icon: url(:/icons/icons/sett_icon_white.png);
+}
 
 /* main menu button */
 QPushButton#menuButton {

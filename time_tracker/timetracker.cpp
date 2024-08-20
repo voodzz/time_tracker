@@ -32,9 +32,13 @@ TimeTracker::~TimeTracker() {
 void TimeTracker::initButtons() {
     // Buttons in side menu
     listButton = new QPushButton("List", sideMenu);
+    listButton->setObjectName("listButton");
     statButton = new QPushButton("Statistics", sideMenu);
+    statButton->setObjectName("statButton");
     settButton = new QPushButton("Settings", sideMenu);
+    settButton->setObjectName("settButton");
     styleButton = new QPushButton("Theme", sideMenu);
+    styleButton->setObjectName("styleButton");
 
     // Menu Button
     menuButton = new QPushButton(this);
