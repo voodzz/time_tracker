@@ -12,22 +12,22 @@
 
 /* Buttons in side menu */
 #sideMenu QPushButton {
-    color: white;
+    color: #262626;
     border: none;
-    border-radius: 10px;
     padding: 10px;
-    background-color: #949494;
-    font-size: 16px;
+    background-color: rgb(200, 200, 200);
+    font-size: 25px;
     font-family: 'Varela Round';
     qproperty-iconSize: 30px 30px;
+    text-align:left;
 }
 
 #sideMenu QPushButton:hover {
-    background-color: #757575;
+    background-color: #a9a9a9;
 }
 
 #sideMenu QPushButton:pressed {
-    background-color: #a9a9a9;
+    background-color: #757575;
 }
 
 #sideMenu QLabel {
@@ -37,19 +37,23 @@
 
 
 #listButton {
-    qproperty-icon: url(:/icons/icons/list_icon_white.png);
+    qproperty-icon: url(:/icons/icons/list_icon_gray.png);
 }
 
 #statButton {
-    qproperty-icon: url(:/icons/icons/stat_icon_white.png);
+    qproperty-icon: url(:/icons/icons/stat_icon_gray.png);
 }
 
 #settButton {
-    qproperty-icon: url(:/icons/icons/sett_icon_white.png);
+    qproperty-icon: url(:/icons/icons/sett_icon_gray.png);
+}
+
+#styleButton {
+    qproperty-icon: url(:/icons/icons/theme_icon_gray.png);
 }
 
 /* main menu button */
 QPushButton#menuButton {
    border: none;
-   background: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
+   background: url(:/icons/icons/menu_icon_darkTheme.png) no-repeat center center;
 }

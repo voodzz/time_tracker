@@ -14,12 +14,12 @@
 #sideMenu QPushButton {
     color: white;
     border: none;
-    border-radius: 10px;
     padding: 10px;
-    background-color: #262626;
-    font-size: 16px;
+    background-color: #3c3c3c;
+    font-size: 25px;
     font-family: 'Varela Round';
     qproperty-iconSize: 30px 30px;
+    text-align:left;
 }
 
 #sideMenu QPushButton:hover {
@@ -47,10 +47,14 @@
     qproperty-icon: url(:/icons/icons/sett_icon_white.png);
 }
 
+#styleButton {
+    qproperty-icon: url(:/icons/icons/theme_icon_white.png);
+}
+
 /* main menu button */
 QPushButton#menuButton {
    border: none;
-   background: url(:/icons/icons/menu_icon_darkTheme.png) no-repeat center center;
+   background: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
 }
 
 /* labels */

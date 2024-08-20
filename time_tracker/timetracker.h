@@ -54,6 +54,8 @@ private:
     QPushButton *settButton;
     QPushButton *styleButton;
     QPushButton *menuButton;
+    void enableButtons();
+    void disableButtons();
 
     //Stacked Widgets
     QStackedWidget *stackedWidget;

@@ -33,17 +33,20 @@ void TimeTracker::initButtons() {
     // Buttons in side menu
     listButton = new QPushButton("List", sideMenu);
     listButton->setObjectName("listButton");
+    listButton->setEnabled(false);
     statButton = new QPushButton("Statistics", sideMenu);
     statButton->setObjectName("statButton");
+    statButton->setEnabled(false);
     settButton = new QPushButton("Settings", sideMenu);
     settButton->setObjectName("settButton");
+    settButton->setEnabled(false);
     styleButton = new QPushButton("Theme", sideMenu);
     styleButton->setObjectName("styleButton");
+    styleButton->setEnabled(false);
 
     // Menu Button
     menuButton = new QPushButton(this);
     menuButton->setFixedSize(50,50);
-    menuButton->move(10, 10);
     menuButton->setObjectName("menuButton");
 
     // Setting cursor for every button
@@ -78,7 +81,6 @@ void TimeTracker::initLayouts()
     settLayout = new QVBoxLayout(settPage);
     settLayout->addWidget(settLabel);
 
-
     // Layout for side menu, idk what is it, but it neccessary
     menuLayout = new QVBoxLayout(sideMenu);
     menuLayout->addSpacing(75);  // Make a space so that the menuButton doesn't overlap the sideMenu buttons
@@ -87,6 +89,8 @@ void TimeTracker::initLayouts()
     menuLayout->addWidget(settButton);
     menuLayout->addWidget(styleButton);
     menuLayout->addStretch(); // It does it beautiful :)
+    menuLayout->setContentsMargins(0, 0, 0, 0); // Remove margins on all sides (left, top, right, bottom)
+    menuLayout->setSpacing(0); // Set spacing between buttons to zero
 }
 
 void TimeTracker::initConnections()
@@ -94,11 +98,13 @@ void TimeTracker::initConnections()
     // Connect a menuButton
     connect(menuButton, &QPushButton::clicked, [this]() {
         if (sideMenu->x() < 0) {
-            animation->setStartValue(QRect(-sideMenu->width(), 0, 250, height()));
-            animation->setEndValue(QRect(0, 0, 250, height()));
+            animation->setStartValue(QRect(-150, 0, 200, height()));
+            animation->setEndValue(QRect(0, 0, 200, height()));
+            enableButtons();
         } else {
-            animation->setStartValue(QRect(0, 0, 250, height()));
-            animation->setEndValue(QRect(-sideMenu->width(), 0, 250, height()));
+            animation->setStartValue(QRect(0, 0, 200, height()));
+            animation->setEndValue(QRect(-150, 0, 200, height()));
+            disableButtons();
         }
         animation->start();
     });
@@ -130,11 +136,11 @@ void TimeTracker::initWidgets()
 
     //Side Menu
     sideMenu = new QWidget(this);
-    sideMenu->setGeometry(QRect(0,0, 250, 768));
+    sideMenu->setGeometry(QRect(0,0, 200, 768));
     sideMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    sideMenu->move(-sideMenu->width(), 0);
+    sideMenu->move(-150, 0);
     sideMenu->setObjectName("sideMenu");
-    sideMenu->setMinimumSize(250, 768);
+    sideMenu->setMinimumSize(200, 768);
 
     //Stacked Widget
     stackedWidget = new QStackedWidget(this);
@@ -176,5 +182,19 @@ void TimeTracker::toggleStyle()
     } else {
         setStyleWhite();
     }
+}
+
+void TimeTracker::enableButtons() {
+    listButton->setEnabled(true);
+    statButton->setEnabled(true);
+    settButton->setEnabled(true);
+    styleButton->setEnabled(true);
+}
+
+void TimeTracker::disableButtons() {
+    listButton->setEnabled(false);
+    statButton->setEnabled(false);
+    settButton->setEnabled(false);
+    styleButton->setEnabled(false);
 }
 

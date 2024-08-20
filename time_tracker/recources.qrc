@@ -10,6 +10,11 @@
         <file>icons/list_icon_white.png</file>
         <file>icons/stat_icon_white.png</file>
         <file>icons/sett_icon_white.png</file>
+        <file>icons/theme_icon_white.png</file>
+        <file>icons/list_icon_gray.png</file>
+        <file>icons/sett_icon_gray.png</file>
+        <file>icons/stat_icon_gray.png</file>
+        <file>icons/theme_icon_gray.png</file>
     </qresource>
     <qresource prefix="/font">
         <file>font/VarelaRoundRegular.ttf</file>
