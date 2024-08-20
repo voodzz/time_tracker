@@ -17,6 +17,8 @@
     border-radius: 10px;
     padding: 10px;
     background-color: #262626;
+    font-size: 16px;
+    font-family: 'Varela Round';
 }
 
 #sideMenu QPushButton:hover {

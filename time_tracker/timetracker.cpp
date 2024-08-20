@@ -1,5 +1,6 @@
 #include "timetracker.h"
 #include "./ui_timetracker.h"
+#include <QFontDatabase>
 #include <QPainter>
 #include <QResizeEvent>
 #include <QStyleOption>
@@ -31,8 +32,8 @@ TimeTracker::~TimeTracker() {
 void TimeTracker::initButtons() {
     // Buttons in side menu
     listButton = new QPushButton("List", sideMenu);
-    statButton = new QPushButton("Statistic", sideMenu);
-    settButton = new QPushButton("Setting", sideMenu);
+    statButton = new QPushButton("Statistics", sideMenu);
+    settButton = new QPushButton("Settings", sideMenu);
     styleButton = new QPushButton("Theme", sideMenu);
 
     // Menu Button

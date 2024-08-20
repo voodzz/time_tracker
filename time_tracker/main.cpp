@@ -1,13 +1,15 @@
 #include "timetracker.h"
 
 #include <QApplication>
+#include <QFontDatabase>
 #include <QLocale>
 #include <QTranslator>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
+    QFontDatabase::addApplicationFont(":/font/font/VarelaRoundRegular.ttf");
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();

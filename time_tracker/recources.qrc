@@ -8,4 +8,7 @@
         <file>icons/menu_icon_darkTheme.png</file>
         <file>icons/menu_icon_lightTheme.png</file>
     </qresource>
+    <qresource prefix="/font">
+        <file>font/VarelaRoundRegular.ttf</file>
+    </qresource>
 </RCC>
