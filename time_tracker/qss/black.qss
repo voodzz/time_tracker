@@ -61,6 +61,6 @@
 /* main menu button */
 QPushButton#menuButton {
    border: none;
-   background: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
+   qproperty-icon: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
 }
 
