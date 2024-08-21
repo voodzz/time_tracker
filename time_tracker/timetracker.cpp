@@ -59,11 +59,14 @@ void TimeTracker::initButtons() {
     styleButton->setCursor(Qt::PointingHandCursor);
 }
 
-void TimeTracker::setAnimations()
-{
+void TimeTracker::setAnimations() {
     // Animation for side menu
-    animation = new QPropertyAnimation(sideMenu, "size");
-    animation->setDuration(400); // Change number for change duration of animation (in ms)
+    menuAnimation = new QPropertyAnimation(sideMenu, "size");
+    menuAnimation->setDuration(300); // Change number for change duration of animation (in ms)
+
+    // Animation for widget
+    widgetGeometryAnimation = new QPropertyAnimation(stackedWidget, "geometry");
+    widgetGeometryAnimation->setDuration(300);
 }
 
 void TimeTracker::initLabels()
@@ -127,15 +130,18 @@ void TimeTracker::initConnections()
     // Connect a menuButton
     connect(menuButton, &QPushButton::clicked, [this]() {
         if (sideMenu->width() == 200) {
-            animation->setStartValue(QSize(200, this->height()));
-            animation->setEndValue(QSize(50, this->height()));
-
+            menuAnimation->setStartValue(QSize(200, this->height()));
+            menuAnimation->setEndValue(QSize(50, this->height()));
+            widgetGeometryAnimation->setStartValue(QRect(200, 0, width() - 200, this->height()));
+            widgetGeometryAnimation->setEndValue(QRect(50, 0, width() - 50, this->height()));
         } else {
-            animation->setStartValue(QSize(50, this->height()));
-            animation->setEndValue(QSize(200, this->height()));
-
+            menuAnimation->setStartValue(QSize(50, this->height()));
+            menuAnimation->setEndValue(QSize(200, this->height()));
+            widgetGeometryAnimation->setStartValue(QRect(50, 0, width() - 50, this->height()));
+            widgetGeometryAnimation->setEndValue(QRect(200, 0, width() - 200, this->height()));
         }
-        animation->start();
+        menuAnimation->start();
+        widgetGeometryAnimation->start();
     });
 
     // Connect a styleButton
@@ -164,6 +170,7 @@ void TimeTracker::initWidgets()
 
     //Stacked Widget
     stackedWidget = new QStackedWidget(this);
+    stackedWidget->setGeometry(QRect(50, 0, width() - 50, height()));
     stackedWidget->addWidget(listPage);
     stackedWidget->addWidget(statPage);
     stackedWidget->addWidget(settPage);

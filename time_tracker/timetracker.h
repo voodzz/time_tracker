@@ -18,6 +18,7 @@
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include <QGridLayout>
+#include <QParallelAnimationGroup>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,7 +43,8 @@ private:
     Ui::TimeTracker *ui;
 
     // Animations
-    QPropertyAnimation *animation;
+    QPropertyAnimation *menuAnimation;
+    QPropertyAnimation *widgetGeometryAnimation;
 
     // Labels (temporary)
     QLabel *listLabel;
