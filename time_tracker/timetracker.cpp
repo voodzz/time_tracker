@@ -42,7 +42,7 @@ void TimeTracker::initButtons() {
     settButton = new QPushButton("Settings", sideMenu);
     settButton->setObjectName("settButton");
 
-    styleButton = new QPushButton("Theme", sideMenu);
+    styleButton = new QPushButton("", settPage);
     styleButton->setObjectName("styleButton");
 
 
@@ -75,15 +75,38 @@ void TimeTracker::initLabels()
 
 void TimeTracker::initLayouts()
 {
-    //Pages Layouts
-    listLayout = new QVBoxLayout(listPage);
-    listLayout->addWidget(listLabel);
+    // List page layouts
+    listLayout = new QGridLayout(listPage);
+    listLayout->setColumnMinimumWidth(0, 250);
+    listLayout->setRowMinimumHeight(0, 150);
 
-    statLayout = new QVBoxLayout(statPage);
-    statLayout->addWidget(statLabel);
+    listLayout->addWidget(listLabel, 1, 1);
 
-    settLayout = new QVBoxLayout(settPage);
-    settLayout->addWidget(settLabel);
+    listLayout->setVerticalSpacing(50);
+    listLayout->setHorizontalSpacing(25);
+
+    // Statistic page layout
+    statLayout = new QGridLayout(statPage);
+    statLayout->setColumnMinimumWidth(0, 250);
+    statLayout->setRowMinimumHeight(0, 150);
+
+    statLayout->addWidget(statLabel, 1, 1);
+
+    statLayout->setVerticalSpacing(50);
+    statLayout->setHorizontalSpacing(25);
+
+    // Settings page layout
+    settLayout = new QGridLayout(settPage);
+    settLayout->setColumnMinimumWidth(0, 250);
+    settLayout->setRowMinimumHeight(0, 150);
+
+    settLayout->addWidget(styleButton, 1, 1);
+    settLayout->addWidget(settLabel, 1, 2);
+    settLayout->addWidget(new QLabel("Second Label", settPage), 2, 2);
+    settLayout->addWidget(new QLabel("Third Label", settPage), 3, 2);
+
+    settLayout->setVerticalSpacing(50);
+    settLayout->setHorizontalSpacing(25);
 
 
     // Layout for side menu
@@ -93,7 +116,6 @@ void TimeTracker::initLayouts()
     menuLayout->addWidget(listButton);
     menuLayout->addWidget(statButton);
     menuLayout->addWidget(settButton);
-    menuLayout->addWidget(styleButton);
 
     menuLayout->addStretch(); // It does it beautiful :)
     menuLayout->setContentsMargins(0, 0, 0, 0); // Remove margins on all sides (left, top, right, bottom)
@@ -137,16 +159,8 @@ void TimeTracker::initWidgets()
 {
     //Pages
     listPage = new QWidget(this);
-    listPage->setGeometry(0, 0, 1366, 768);
     statPage = new QWidget(this);
     settPage = new QWidget(this);
-
-    //Side Menu
-    sideMenu = new QWidget(this);
-    sideMenu->setGeometry(QRect(0,0, 50, 768));
-    sideMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    sideMenu->setObjectName("sideMenu");
-    sideMenu->setMinimumSize(50, 768);
 
     //Stacked Widget
     stackedWidget = new QStackedWidget(this);
@@ -155,6 +169,12 @@ void TimeTracker::initWidgets()
     stackedWidget->addWidget(settPage);
     stackedWidget->setCurrentIndex(0);
 
+    //Side Menu
+    sideMenu = new QWidget(this);
+    sideMenu->setGeometry(QRect(0,0, 50, 768));
+    sideMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    sideMenu->setObjectName("sideMenu");
+    sideMenu->setMinimumSize(50, 768);
 }
 
 

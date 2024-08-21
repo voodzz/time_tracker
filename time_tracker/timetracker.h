@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QStackedWidget>
 #include <QBoxLayout>
+#include <QGridLayout>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -67,9 +68,9 @@ private:
 
     //Layouts
     QVBoxLayout *menuLayout; //Part of sideMenu
-    QBoxLayout *listLayout;
-    QBoxLayout *statLayout;
-    QBoxLayout *settLayout;
+    QGridLayout *listLayout;
+    QGridLayout *statLayout;
+    QGridLayout *settLayout;
 
 
     // Style Regulator

@@ -48,6 +48,13 @@
 }
 
 #styleButton {
+    color: white;
+    border: none;
+    background-color: #505050;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    qproperty-iconSize: 50px 50px;
+    text-align:left;
     qproperty-icon: url(:/icons/icons/theme_icon_white.png);
 }
 
