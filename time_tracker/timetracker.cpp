@@ -28,6 +28,17 @@ TimeTracker::~TimeTracker() {
     delete ui;
 }
 
+void TimeTracker::resizeEvent(QResizeEvent *event) {
+    QSize newSize = event->size(); // new size
+    int sideMenuWidth = isMenuOpen ? 200 : 50; // gatting the current menu width
+
+    // New geometries
+    sideMenu->setGeometry(0, 0, sideMenuWidth, newSize.height());
+    stackedWidget->setGeometry(sideMenuWidth, 0, newSize.width() - sideMenuWidth, newSize.height());
+
+    // Call the base class implementation (not necessary, but it'll be better with this line written)
+    QWidget::resizeEvent(event);
+}
 
 // ========================== Init Functions ==========================
 void TimeTracker::initButtons() {

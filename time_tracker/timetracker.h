@@ -35,6 +35,10 @@ public:
     TimeTracker(QWidget *parent = nullptr);
     ~TimeTracker();
 
+protected:
+    // Events
+    void resizeEvent(QResizeEvent *event) override;
+
 private slots:
     // Style Slots
     void toggleStyle();
