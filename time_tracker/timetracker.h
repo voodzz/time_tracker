@@ -36,11 +36,14 @@ public:
     ~TimeTracker();
 
 private slots:
-    //Style Slots
+    // Style Slots
     void toggleStyle();
 
+    // Animation slots
+    void performMenuAnimations();
 private:
     Ui::TimeTracker *ui;
+    bool isMenuOpen = false;
 
     // Animations
     QPropertyAnimation *menuAnimation;

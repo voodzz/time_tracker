@@ -5,7 +5,7 @@
 #include <QResizeEvent>
 #include <QStyleOption>
 
-// ========================= Constructors & Destructors ===================
+// =================== Constructors & Destructors ===================
 TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTracker) {
     ui->setupUi(this);
 
@@ -128,21 +128,7 @@ void TimeTracker::initLayouts()
 void TimeTracker::initConnections()
 {
     // Connect a menuButton
-    connect(menuButton, &QPushButton::clicked, [this]() {
-        if (sideMenu->width() == 200) {
-            menuAnimation->setStartValue(QSize(200, this->height()));
-            menuAnimation->setEndValue(QSize(50, this->height()));
-            widgetGeometryAnimation->setStartValue(QRect(200, 0, width() - 200, this->height()));
-            widgetGeometryAnimation->setEndValue(QRect(50, 0, width() - 50, this->height()));
-        } else {
-            menuAnimation->setStartValue(QSize(50, this->height()));
-            menuAnimation->setEndValue(QSize(200, this->height()));
-            widgetGeometryAnimation->setStartValue(QRect(50, 0, width() - 50, this->height()));
-            widgetGeometryAnimation->setEndValue(QRect(200, 0, width() - 200, this->height()));
-        }
-        menuAnimation->start();
-        widgetGeometryAnimation->start();
-    });
+    connect(menuButton, &QPushButton::clicked, this, &TimeTracker::performMenuAnimations);
 
     // Connect a styleButton
     connect(styleButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
@@ -150,14 +136,23 @@ void TimeTracker::initConnections()
     //Connect a sideMenu buttons
     connect(listButton, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(0);
+        if (isMenuOpen) {
+            performMenuAnimations();
+        }
     });
 
     connect(statButton, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(1);
+        if (isMenuOpen) {
+            performMenuAnimations();
+        }
     });
 
     connect(settButton, &QPushButton::clicked, this, [this]() {
         stackedWidget->setCurrentIndex(2);
+        if (isMenuOpen) {
+            performMenuAnimations();
+        }
     });
 }
 
@@ -185,7 +180,7 @@ void TimeTracker::initWidgets()
 }
 
 
-// =============================== Style Functions & Style Slots =====================
+// ==================== Style Functions & Style Slots =====================
 void TimeTracker::applyStyle(const QString &styleFile)
 {
     QFile file(styleFile);
@@ -207,9 +202,7 @@ void TimeTracker::setStyleWhite() {
     currentStyle = "white";
 }
 
-
-void TimeTracker::toggleStyle()
-{
+void TimeTracker::toggleStyle() {
     if (currentStyle == "white") {
         setStyleBlack();
     } else {
@@ -218,7 +211,27 @@ void TimeTracker::toggleStyle()
 }
 
 
-// ============================ Additional Functions ===================
+// =================== Animation slots ===================
+void TimeTracker::performMenuAnimations() {
+    if (sideMenu->width() == 200) {
+        menuAnimation->setStartValue(QSize(200, this->height()));
+        menuAnimation->setEndValue(QSize(50, this->height()));
+        widgetGeometryAnimation->setStartValue(QRect(200, 0, width() - 200, this->height()));
+        widgetGeometryAnimation->setEndValue(QRect(50, 0, width() - 50, this->height()));
+        isMenuOpen = false;
+    } else {
+        menuAnimation->setStartValue(QSize(50, this->height()));
+        menuAnimation->setEndValue(QSize(200, this->height()));
+        widgetGeometryAnimation->setStartValue(QRect(50, 0, width() - 50, this->height()));
+        widgetGeometryAnimation->setEndValue(QRect(200, 0, width() - 200, this->height()));
+        isMenuOpen = true;
+    }
+    menuAnimation->start();
+    widgetGeometryAnimation->start();
+}
+
+
+// =================== Additional Functions ===================
 void TimeTracker::enableButtons() {
     listButton->setEnabled(true);
     statButton->setEnabled(true);
