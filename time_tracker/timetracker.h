@@ -54,8 +54,6 @@ private:
     QPushButton *settButton;
     QPushButton *styleButton;
     QPushButton *menuButton;
-    void enableButtons();
-    void disableButtons();
 
     //Stacked Widgets
     QStackedWidget *stackedWidget;
@@ -89,6 +87,10 @@ private:
     void applyStyle(const QString &styleFile);
     void setStyleBlack();
     void setStyleWhite();
+
+    // Additional Functions
+    void enableButtons();
+    void disableButtons();
 
 };
 #endif // TIMETRACKER_H

@@ -12,6 +12,7 @@ TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTrac
     // Window Icon
     setWindowIcon(QIcon(":/icons/icons/program_icon.png"));
 
+    // Inits
     initWidgets();
     initButtons();
     initLabels();
@@ -30,19 +31,20 @@ TimeTracker::~TimeTracker() {
 
 // ========================== Init Functions ==========================
 void TimeTracker::initButtons() {
+
     // Buttons in side menu
     listButton = new QPushButton("List", sideMenu);
     listButton->setObjectName("listButton");
-    listButton->setEnabled(false);
+
     statButton = new QPushButton("Statistics", sideMenu);
     statButton->setObjectName("statButton");
-    statButton->setEnabled(false);
+
     settButton = new QPushButton("Settings", sideMenu);
     settButton->setObjectName("settButton");
-    settButton->setEnabled(false);
+
     styleButton = new QPushButton("Theme", sideMenu);
     styleButton->setObjectName("styleButton");
-    styleButton->setEnabled(false);
+
 
     // Menu Button
     menuButton = new QPushButton(this);
@@ -60,7 +62,7 @@ void TimeTracker::initButtons() {
 void TimeTracker::setAnimations()
 {
     // Animation for side menu
-    animation = new QPropertyAnimation(sideMenu, "geometry");
+    animation = new QPropertyAnimation(sideMenu, "size");
     animation->setDuration(400); // Change number for change duration of animation (in ms)
 }
 
@@ -76,18 +78,23 @@ void TimeTracker::initLayouts()
     //Pages Layouts
     listLayout = new QVBoxLayout(listPage);
     listLayout->addWidget(listLabel);
+
     statLayout = new QVBoxLayout(statPage);
     statLayout->addWidget(statLabel);
+
     settLayout = new QVBoxLayout(settPage);
     settLayout->addWidget(settLabel);
 
-    // Layout for side menu, idk what is it, but it neccessary
+
+    // Layout for side menu
     menuLayout = new QVBoxLayout(sideMenu);
     menuLayout->addSpacing(75);  // Make a space so that the menuButton doesn't overlap the sideMenu buttons
+
     menuLayout->addWidget(listButton);
     menuLayout->addWidget(statButton);
     menuLayout->addWidget(settButton);
     menuLayout->addWidget(styleButton);
+
     menuLayout->addStretch(); // It does it beautiful :)
     menuLayout->setContentsMargins(0, 0, 0, 0); // Remove margins on all sides (left, top, right, bottom)
     menuLayout->setSpacing(0); // Set spacing between buttons to zero
@@ -97,14 +104,14 @@ void TimeTracker::initConnections()
 {
     // Connect a menuButton
     connect(menuButton, &QPushButton::clicked, [this]() {
-        if (sideMenu->x() < 0) {
-            animation->setStartValue(QRect(-150, 0, 200, height()));
-            animation->setEndValue(QRect(0, 0, 200, height()));
-            enableButtons();
+        if (sideMenu->width() == 200) {
+            animation->setStartValue(QSize(200, this->height()));
+            animation->setEndValue(QSize(50, this->height()));
+
         } else {
-            animation->setStartValue(QRect(0, 0, 200, height()));
-            animation->setEndValue(QRect(-150, 0, 200, height()));
-            disableButtons();
+            animation->setStartValue(QSize(50, this->height()));
+            animation->setEndValue(QSize(200, this->height()));
+
         }
         animation->start();
     });
@@ -136,11 +143,10 @@ void TimeTracker::initWidgets()
 
     //Side Menu
     sideMenu = new QWidget(this);
-    sideMenu->setGeometry(QRect(0,0, 200, 768));
+    sideMenu->setGeometry(QRect(0,0, 50, 768));
     sideMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    sideMenu->move(-150, 0);
     sideMenu->setObjectName("sideMenu");
-    sideMenu->setMinimumSize(200, 768);
+    sideMenu->setMinimumSize(50, 768);
 
     //Stacked Widget
     stackedWidget = new QStackedWidget(this);
@@ -184,6 +190,8 @@ void TimeTracker::toggleStyle()
     }
 }
 
+
+// ============================ Additional Functions ===================
 void TimeTracker::enableButtons() {
     listButton->setEnabled(true);
     statButton->setEnabled(true);

@@ -57,7 +57,3 @@ QPushButton#menuButton {
    background: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
 }
 
-/* labels */
-QLabel {
-    font: 50px;
-}
