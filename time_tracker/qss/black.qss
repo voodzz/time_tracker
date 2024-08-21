@@ -47,20 +47,38 @@
     qproperty-icon: url(:/icons/icons/sett_icon_white.png);
 }
 
-#styleButton {
-    color: white;
-    border: none;
-    background-color: #505050;
-    font-size: 25px;
-    font-family: 'Varela Round';
-    qproperty-iconSize: 50px 50px;
-    text-align:left;
-    qproperty-icon: url(:/icons/icons/theme_icon_white.png);
-}
-
 /* main menu button */
 QPushButton#menuButton {
    border: none;
    qproperty-icon: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
 }
 
+/* arrow buttons */
+#leftArrowThemeSettingButton {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 25px;
+    font-family: 'Varela Round';
+}
+
+#rightArrowThemeSettingButton {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 25px;
+    font-family: 'Varela Round';
+}
+
+/* Theme labels in the settings page */
+#themeLabel {
+    color: white;
+    font-size: 30px;
+    font-family: 'Varela Round';
+}
+
+#currentThemeLabel {
+    color: white;
+    font-size: 30px;
+    font-family: 'Varela Round';
+}

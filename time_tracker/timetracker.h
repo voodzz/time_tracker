@@ -47,6 +47,7 @@ private slots:
     void performMenuAnimations();
 private:
     Ui::TimeTracker *ui;
+
     bool isMenuOpen = false;
 
     // Animations
@@ -56,7 +57,8 @@ private:
     // Labels (temporary)
     QLabel *listLabel;
     QLabel *statLabel;
-    QLabel *settLabel;
+    QLabel *themeLabel; // NOT temporary
+    QLabel *currentThemeLabel; // -//-
 
     // Buttons
     QPushButton *listButton;
@@ -64,6 +66,8 @@ private:
     QPushButton *settButton;
     QPushButton *styleButton;
     QPushButton *menuButton;
+    QPushButton *leftArrowThemeSettingButton;
+    QPushButton *rightArrowThemeSettingButton;
 
     //Stacked Widgets
     QStackedWidget *stackedWidget;
@@ -80,6 +84,7 @@ private:
     QGridLayout *listLayout;
     QGridLayout *statLayout;
     QGridLayout *settLayout;
+    QHBoxLayout *themeSettingLayout;
 
 
     // Style Regulator

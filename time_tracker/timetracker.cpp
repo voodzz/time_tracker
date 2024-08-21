@@ -12,7 +12,7 @@ TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTrac
     // Window Icon
     setWindowIcon(QIcon(":/icons/icons/program_icon.png"));
 
-    // Inits
+    // Inits (very british)
     initWidgets();
     initButtons();
     initLabels();
@@ -53,21 +53,25 @@ void TimeTracker::initButtons() {
     settButton = new QPushButton("Settings", sideMenu);
     settButton->setObjectName("settButton");
 
-    styleButton = new QPushButton("", settPage);
-    styleButton->setObjectName("styleButton");
-
-
     // Menu Button
     menuButton = new QPushButton(this);
     menuButton->setFixedSize(50,50);
     menuButton->setObjectName("menuButton");
+
+    leftArrowThemeSettingButton = new QPushButton("<", settPage);
+    leftArrowThemeSettingButton->setFixedSize(30,30);
+    leftArrowThemeSettingButton->setObjectName("leftArrowThemeSettingButton");
+    rightArrowThemeSettingButton = new QPushButton(">", settPage);
+    rightArrowThemeSettingButton->setFixedSize(30,30);
+    rightArrowThemeSettingButton->setObjectName("rightArrowThemeSettingButton");
 
     // Setting cursor for every button
     menuButton->setCursor(Qt::PointingHandCursor);
     listButton->setCursor(Qt::PointingHandCursor);
     statButton->setCursor(Qt::PointingHandCursor);
     settButton->setCursor(Qt::PointingHandCursor);
-    styleButton->setCursor(Qt::PointingHandCursor);
+    leftArrowThemeSettingButton->setCursor(Qt::PointingHandCursor);
+    rightArrowThemeSettingButton->setCursor(Qt::PointingHandCursor);
 }
 
 void TimeTracker::setAnimations() {
@@ -80,11 +84,15 @@ void TimeTracker::setAnimations() {
     widgetGeometryAnimation->setDuration(300);
 }
 
-void TimeTracker::initLabels()
-{
+void TimeTracker::initLabels() {
     listLabel = new QLabel("This is List Page!", listPage);
     statLabel = new QLabel("This is Statistic Page!", statPage);
-    settLabel = new QLabel("This is Settings Page!", settPage);
+
+    themeLabel = new QLabel("Theme", settPage);
+    themeLabel->setObjectName("themeLabel");
+
+    currentThemeLabel = new QLabel(" Dark ", settPage);
+    currentThemeLabel->setObjectName("currentThemeLabel");
 }
 
 void TimeTracker::initLayouts()
@@ -114,10 +122,6 @@ void TimeTracker::initLayouts()
     settLayout->setColumnMinimumWidth(0, 250);
     settLayout->setRowMinimumHeight(0, 150);
 
-    settLayout->addWidget(styleButton, 1, 1);
-    settLayout->addWidget(settLabel, 1, 2);
-    settLayout->addWidget(new QLabel("Second Label", settPage), 2, 2);
-    settLayout->addWidget(new QLabel("Third Label", settPage), 3, 2);
 
     settLayout->setVerticalSpacing(50);
     settLayout->setHorizontalSpacing(25);
@@ -134,15 +138,21 @@ void TimeTracker::initLayouts()
     menuLayout->addStretch(); // It does it beautiful :)
     menuLayout->setContentsMargins(0, 0, 0, 0); // Remove margins on all sides (left, top, right, bottom)
     menuLayout->setSpacing(0); // Set spacing between buttons to zero
+
+    themeSettingLayout = new QHBoxLayout(settPage);
+    themeSettingLayout->addWidget(themeLabel);
+    themeSettingLayout->addStretch();
+    themeSettingLayout->addWidget(leftArrowThemeSettingButton);
+    themeSettingLayout->addWidget(currentThemeLabel);
+    themeSettingLayout->addWidget(rightArrowThemeSettingButton);
+    themeSettingLayout->addStretch();
+    settLayout->addLayout(themeSettingLayout, 4, 2);
 }
 
 void TimeTracker::initConnections()
 {
     // Connect a menuButton
     connect(menuButton, &QPushButton::clicked, this, &TimeTracker::performMenuAnimations);
-
-    // Connect a styleButton
-    connect(styleButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
 
     //Connect a sideMenu buttons
     connect(listButton, &QPushButton::clicked, this, [this]() {
@@ -165,6 +175,11 @@ void TimeTracker::initConnections()
             performMenuAnimations();
         }
     });
+
+    // Connect the theme setting arrows
+    connect(leftArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
+    connect(rightArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
+
 }
 
 void TimeTracker::initWidgets()
@@ -206,11 +221,13 @@ void TimeTracker::applyStyle(const QString &styleFile)
 void TimeTracker::setStyleBlack() {
     applyStyle(":/styles/qss/black.qss");
     currentStyle = "black";
+    currentThemeLabel->setText(" Dark ");
 }
 
 void TimeTracker::setStyleWhite() {
     applyStyle(":/styles/qss/white.qss");
     currentStyle = "white";
+    currentThemeLabel->setText(" Light ");
 }
 
 void TimeTracker::toggleStyle() {
