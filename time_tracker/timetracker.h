@@ -16,6 +16,7 @@
 #include <QParallelAnimationGroup>
 #include <QScrollBar>
 #include "classes/Task.h"
+#include "classes/DeadlineDialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -119,6 +120,5 @@ private:
     // Additional Functions
     void enableButtons();
     void disableButtons();
-
 };
 #endif // TIMETRACKER_H

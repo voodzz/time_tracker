@@ -8,6 +8,7 @@
 #include <QIcon>
 #include <QScrollArea>
 #include "TaskSettingsDialog.h"
+#include "DeadlineDialog.h"
 
 class Task : public QWidget
 {
@@ -30,7 +31,9 @@ signals:
 private slots:
     // On task clicked functions
     void onTaskNameClicked();
-    void onTaskButtonClicked();
+
+    // Deadline slot
+    void showDeadlineDialog();
 
     // Settings dialog functions
     void openSettingsDialog();
@@ -40,7 +43,7 @@ private slots:
 private:
 
     // Variables
-    QPushButton *taskButton; // Button to left of task name
+    QPushButton *deadlineButton; // Button to left of task name
     QLabel *taskNameLabel; // Name
     QLabel *durationLabel; // Duration
 

@@ -30,7 +30,7 @@ void Task::setDuration(int duration)
 
 void Task::initVariables()
 {
-    taskButton = new QPushButton(this);
+    deadlineButton = new QPushButton(this);
     taskNameLabel = new QLabel(this);
     durationLabel = new QLabel(this);
 
@@ -38,7 +38,7 @@ void Task::initVariables()
     taskNameLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     taskNameLabel->setOpenExternalLinks(false);
 
-    taskButton->setCursor(Qt::PointingHandCursor);
+    deadlineButton->setCursor(Qt::PointingHandCursor);
     taskNameLabel->setCursor(Qt::PointingHandCursor);
 
     setDuration(3);
@@ -48,7 +48,7 @@ void Task::initLayouts()
 {
     mainLayout = new QHBoxLayout(this);
 
-    mainLayout->addWidget(taskButton);
+    mainLayout->addWidget(deadlineButton);
     mainLayout->addWidget(taskNameLabel);
     mainLayout->addWidget(durationLabel);
 
@@ -60,10 +60,7 @@ void Task::initLayouts()
 void Task::initConnections()
 {
     connect(taskNameLabel, &QLabel::linkActivated, this, &Task::openSettingsDialog);
-    connect(taskButton, &QPushButton::clicked, this, [this]() {
-        TimerDialog timerDialog(durationLabel->text().count("⭐"), 5, this);
-        timerDialog.exec();
-    });
+    connect(deadlineButton, &QPushButton::clicked, this, &Task::showDeadlineDialog);
 }
 
 // =========================== Other Functions ===============================
@@ -84,9 +81,16 @@ void Task::onTaskNameClicked()
     emit taskNameClicked();
 }
 
-void Task::onTaskButtonClicked()
-{
-    emit taskButtonClicked();
+// =================== Deadline slot ===================
+void Task::showDeadlineDialog() {
+    DeadlineDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) {
+        QDate selectedDate = dialog.selectedDate();
+        QPushButton *button = qobject_cast<QPushButton*>(sender());
+        if (button) {
+            button->setText(selectedDate.toString("dd.MM"));
+        }
+    }
 }
 
 

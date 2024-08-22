@@ -50,6 +50,7 @@ else()
             classes/TaskSettingsDialog.cpp
             classes/TimerDialog.h
             classes/TimerDialog.cpp
+            classes/DeadlineDialog.h classes/DeadlineDialog.cpp
         )
     endif()
 
