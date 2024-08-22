@@ -53,6 +53,7 @@ void TimeTracker::initButtons() {
     settButton = new QPushButton("Settings", sideMenu);
     settButton->setObjectName("settButton");
 
+
     // Menu Button
     menuButton = new QPushButton(this);
     menuButton->setFixedSize(50,50);
@@ -61,9 +62,16 @@ void TimeTracker::initButtons() {
     leftArrowThemeSettingButton = new QPushButton("<", settPage);
     leftArrowThemeSettingButton->setFixedSize(30,30);
     leftArrowThemeSettingButton->setObjectName("leftArrowThemeSettingButton");
+
     rightArrowThemeSettingButton = new QPushButton(">", settPage);
     rightArrowThemeSettingButton->setFixedSize(30,30);
     rightArrowThemeSettingButton->setObjectName("rightArrowThemeSettingButton");
+
+    // Task button
+    addTaskButton = new QPushButton("+", listPage);
+    addTaskButton->setFixedSize(50,50);
+    addTaskButton->setObjectName("addTaskButton");
+
 
     // Setting cursor for every button
     menuButton->setCursor(Qt::PointingHandCursor);
@@ -72,6 +80,7 @@ void TimeTracker::initButtons() {
     settButton->setCursor(Qt::PointingHandCursor);
     leftArrowThemeSettingButton->setCursor(Qt::PointingHandCursor);
     rightArrowThemeSettingButton->setCursor(Qt::PointingHandCursor);
+    addTaskButton->setCursor(Qt::PointingHandCursor);
 }
 
 void TimeTracker::setAnimations() {
@@ -97,12 +106,22 @@ void TimeTracker::initLabels() {
 
 void TimeTracker::initLayouts()
 {
+    // Theme setting layout
+    themeSettingLayout = new QHBoxLayout(settPage);
+    themeSettingLayout->addWidget(themeLabel);
+    themeSettingLayout->addStretch();
+    themeSettingLayout->addWidget(leftArrowThemeSettingButton);
+    themeSettingLayout->addWidget(currentThemeLabel);
+    themeSettingLayout->addWidget(rightArrowThemeSettingButton);
+    themeSettingLayout->addStretch();
+
+
     // List page layouts
     listLayout = new QGridLayout(listPage);
     listLayout->setColumnMinimumWidth(0, 250);
     listLayout->setRowMinimumHeight(0, 150);
 
-    listLayout->addWidget(listLabel, 1, 1);
+    listLayout->addWidget(addTaskButton, 3, 2);
 
     listLayout->setVerticalSpacing(50);
     listLayout->setHorizontalSpacing(25);
@@ -122,6 +141,7 @@ void TimeTracker::initLayouts()
     settLayout->setColumnMinimumWidth(0, 250);
     settLayout->setRowMinimumHeight(0, 150);
 
+    settLayout->addLayout(themeSettingLayout, 4, 2);
 
     settLayout->setVerticalSpacing(50);
     settLayout->setHorizontalSpacing(25);
@@ -138,15 +158,6 @@ void TimeTracker::initLayouts()
     menuLayout->addStretch(); // It does it beautiful :)
     menuLayout->setContentsMargins(0, 0, 0, 0); // Remove margins on all sides (left, top, right, bottom)
     menuLayout->setSpacing(0); // Set spacing between buttons to zero
-
-    themeSettingLayout = new QHBoxLayout(settPage);
-    themeSettingLayout->addWidget(themeLabel);
-    themeSettingLayout->addStretch();
-    themeSettingLayout->addWidget(leftArrowThemeSettingButton);
-    themeSettingLayout->addWidget(currentThemeLabel);
-    themeSettingLayout->addWidget(rightArrowThemeSettingButton);
-    themeSettingLayout->addStretch();
-    settLayout->addLayout(themeSettingLayout, 4, 2);
 }
 
 void TimeTracker::initConnections()

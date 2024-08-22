@@ -57,8 +57,10 @@ private:
     // Labels (temporary)
     QLabel *listLabel;
     QLabel *statLabel;
-    QLabel *themeLabel; // NOT temporary
-    QLabel *currentThemeLabel; // -//-
+
+    // Labels (NOT temporary)
+    QLabel *themeLabel;
+    QLabel *currentThemeLabel;
 
     // Buttons
     QPushButton *listButton;
@@ -66,8 +68,11 @@ private:
     QPushButton *settButton;
     QPushButton *styleButton;
     QPushButton *menuButton;
+
     QPushButton *leftArrowThemeSettingButton;
     QPushButton *rightArrowThemeSettingButton;
+
+    QPushButton *addTaskButton;
 
     //Stacked Widgets
     QStackedWidget *stackedWidget;

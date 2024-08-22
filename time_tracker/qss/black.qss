@@ -82,3 +82,22 @@ QPushButton#menuButton {
     font-size: 30px;
     font-family: 'Varela Round';
 }
+
+#addTaskButton {
+    color: white;
+    border: none;
+    padding: 10px;
+    background-color: #3c3c3c;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    qproperty-iconSize: 30px 30px;
+    text-align:left;
+}
+
+#addTaskButton:hover {
+    background-color: #535353;
+}
+
+#addTaskButton:pressed {
+    background-color: #404247;
+}
