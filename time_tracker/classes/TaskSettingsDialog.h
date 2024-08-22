@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QLabel>
 
 class TaskSettingsDialog : public QDialog
 {
@@ -38,12 +39,20 @@ private:
     QPushButton *deleteButton;
 
     // Layouts
-    QVBoxLayout *mainLayout;
-    QHBoxLayout *buttonsLayout;
+    QGridLayout *layout;
+
+    // Labels
+    QLabel *taskNameLabel;
+    QLabel *durationLabel;
+    QLabel *workTimeTextLabel;
+    QLabel *workTimeLabel;
+    QLabel *restTimeTextLabel;
+    QLabel *restTimeLabel;
 
     // Init Functions
     void initVariables();
     void initLayouts();
+    void initLabels();
     void initConnections();
 };
 

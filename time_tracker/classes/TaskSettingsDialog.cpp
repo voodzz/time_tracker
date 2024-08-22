@@ -7,6 +7,7 @@ TaskSettingsDialog::TaskSettingsDialog(QWidget *parent) : QDialog(parent)
     setWindowTitle("Task Settings");
 
     initVariables();
+    initLabels();
     initLayouts();
     initConnections();
 }
@@ -25,15 +26,27 @@ void TaskSettingsDialog::initVariables()
 
 void TaskSettingsDialog::initLayouts()
 {
-    mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(nameEdit);
-    mainLayout->addWidget(durationSpinBox);
+    layout = new QGridLayout(this);
+    layout->addWidget(taskNameLabel, 1, 1);
+    layout->addWidget(nameEdit, 1, 2);
+    layout->addWidget(durationLabel, 2, 1);
+    layout->addWidget(durationSpinBox, 2, 2);
+    layout->addWidget(workTimeTextLabel, 3, 1);
+    layout->addWidget(workTimeLabel, 3, 2);
+    layout->addWidget(restTimeTextLabel, 4, 1);
+    layout->addWidget(restTimeLabel, 4, 2);
+    layout->addWidget(applyButton, 5, 1);
+    layout->addWidget(deleteButton, 5, 2);
+    this->setLayout(layout);
+}
 
-    buttonsLayout = new QHBoxLayout();
-    buttonsLayout->addWidget(applyButton);
-    buttonsLayout->addWidget(deleteButton);
-
-    mainLayout->addLayout(buttonsLayout);
+void TaskSettingsDialog::initLabels() {
+    taskNameLabel = new QLabel("Name:", this);
+    durationLabel = new QLabel("Duration:", this);
+    workTimeTextLabel = new QLabel("Work time:", this);
+    workTimeLabel = new QLabel(this);
+    restTimeTextLabel = new QLabel("Rest time:", this);
+    restTimeLabel = new QLabel(this);
 }
 
 void TaskSettingsDialog::initConnections()
