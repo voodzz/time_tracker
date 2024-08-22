@@ -45,6 +45,11 @@ else()
             ${PROJECT_SOURCES}
             qss/black.qss qss/white.qss
             recources.qrc
+            classes/Task.cpp classes/Task.h
+            classes/TaskSettingsDialog.h
+            classes/TaskSettingsDialog.cpp
+            classes/TimerDialog.h
+            classes/TimerDialog.cpp
         )
     endif()
 

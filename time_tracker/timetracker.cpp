@@ -6,7 +6,7 @@
 #include <QStyleOption>
 
 // =================== Constructors & Destructors ===================
-TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTracker) {
+TimeTracker::TimeTracker(QWidget *parent) : QWidget(parent), ui(new Ui::TimeTracker), taskCount(0) {
     ui->setupUi(this);
 
     // Window Icon
@@ -106,6 +106,19 @@ void TimeTracker::initLabels() {
 
 void TimeTracker::initLayouts()
 {
+    // Create the task container and scroll area
+    taskContainer = new QWidget(this);
+    taskLayout = new QGridLayout(taskContainer);
+    taskLayout->setVerticalSpacing(10);
+    taskLayout->setHorizontalSpacing(10);
+
+    taskContainer->setLayout(taskLayout);
+
+    scrollArea = new QScrollArea(listPage);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(taskContainer);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
     // Theme setting layout
     themeSettingLayout = new QHBoxLayout(settPage);
     themeSettingLayout->addWidget(themeLabel);
@@ -121,7 +134,10 @@ void TimeTracker::initLayouts()
     listLayout->setColumnMinimumWidth(0, 250);
     listLayout->setRowMinimumHeight(0, 150);
 
-    listLayout->addWidget(addTaskButton, 3, 2);
+    listLayout->addWidget(addTaskButton, 1, 2, Qt::AlignRight | Qt::AlignBottom);
+    listLayout->setContentsMargins(0, 0, 50, 50);
+
+    listLayout->addWidget(scrollArea, 0, 0, 1, 3);
 
     listLayout->setVerticalSpacing(50);
     listLayout->setHorizontalSpacing(25);
@@ -190,6 +206,7 @@ void TimeTracker::initConnections()
     // Connect the theme setting arrows
     connect(leftArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
     connect(rightArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
+    connect(addTaskButton, &QPushButton::clicked, this, &TimeTracker::addTask);
 
 }
 
@@ -285,3 +302,29 @@ void TimeTracker::disableButtons() {
     styleButton->setEnabled(false);
 }
 
+void TimeTracker::addTask()
+{
+    if (taskCount < 20)
+    {
+        Task *task = new Task(taskCount + 1, this);
+        taskLayout->addWidget(task, taskCount, 1);
+
+        connect(task, &Task::taskDeleted, this, [this, task]() {
+            taskLayout->removeWidget(task);
+            taskCount--;
+            addTaskButton->setEnabled(true);
+
+            // Re-position the addTaskButton
+            taskLayout->addWidget(addTaskButton, taskCount, 2, Qt::AlignRight | Qt::AlignBottom);
+        });
+
+        taskCount++;
+
+        if (taskCount >= 20) {
+            addTaskButton->setEnabled(false);
+        }
+    }
+
+    // Adjust button position
+    taskLayout->addWidget(addTaskButton, taskCount, 2, Qt::AlignRight | Qt::AlignBottom);
+}

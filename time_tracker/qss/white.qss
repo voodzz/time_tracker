@@ -72,7 +72,7 @@ QPushButton#menuButton {
 }
 
 /* Theme labels in the settings page */
-#themeLabel {
+QLabel {
     color: #262626;
     font-size: 30px;
     font-family: 'Varela Round';

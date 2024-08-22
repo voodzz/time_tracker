@@ -1,24 +1,21 @@
 #ifndef TIMETRACKER_H
 #define TIMETRACKER_H
 
-#include <QWidget>
 #include <QTabWidget>
 #include <QTabBar>
 #include <QMenu>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QPropertyAnimation>
 #include <QSpacerItem>
 #include <QFrame>
-#include <QPushButton>
 #include <QFile>
 #include <QTextStream>
-#include <QHBoxLayout>
-#include <QLabel>
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QParallelAnimationGroup>
+#include <QScrollBar>
+#include "classes/Task.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,7 +37,11 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private slots:
-    // Style Slots
+
+    // Task slots
+    void addTask();
+
+    // Style slots
     void toggleStyle();
 
     // Animation slots
@@ -57,6 +58,9 @@ private:
     // Labels (temporary)
     QLabel *listLabel;
     QLabel *statLabel;
+
+    // Scroll areas
+    QScrollArea *scrollArea;
 
     // Labels (NOT temporary)
     QLabel *themeLabel;
@@ -82,9 +86,11 @@ private:
     QWidget *listPage;
     QWidget *statPage;
     QWidget *settPage;
+    QWidget *taskContainer;
 
 
     //Layouts
+    QGridLayout *taskLayout;
     QVBoxLayout *menuLayout; //Part of sideMenu
     QGridLayout *listLayout;
     QGridLayout *statLayout;
@@ -94,6 +100,8 @@ private:
 
     // Style Regulator
     QString currentStyle;
+
+    int taskCount;
 
     // Init Functions
     void initButtons();
