@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QTextEdit>
 
 class TaskSettingsDialog : public QDialog
 {
@@ -20,23 +21,25 @@ public:
     // Setters
     void setTaskName(const QString &name);
     void setDuration(int duration);
+    void setDeadline(const QString& deadline);
 
 signals:
     // Signals
-    void taskUpdated(const QString &name, int duration);
+    void taskUpdated(const QString &name, int duration, const QString &deadline);
     void taskDeleted();
 
 private slots:
     // Slots
     void applyChanges();
     void deleteTask();
-
+    void showDeadlineDialog();
 private:
     // Variables
     QLineEdit *nameEdit;
     QSpinBox *durationSpinBox;
     QPushButton *applyButton;
     QPushButton *deleteButton;
+    QPushButton *deadlineButton;
 
     // Layouts
     QGridLayout *layout;
@@ -44,6 +47,7 @@ private:
     // Labels
     QLabel *taskNameLabel;
     QLabel *durationLabel;
+    QLabel *deadlineLabel;
     QLabel *workTimeTextLabel;
     QLabel *workTimeLabel;
     QLabel *restTimeTextLabel;

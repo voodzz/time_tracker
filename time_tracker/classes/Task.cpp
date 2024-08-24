@@ -26,6 +26,10 @@ void Task::setDuration(int duration)
     updateDurationIcons(duration);
 }
 
+void Task::setDeadline(const QString &deadline) {
+    deadlineButton->setText(deadline);
+}
+
 // =========================== Init Functions ================================
 
 void Task::initVariables()
@@ -100,6 +104,7 @@ void Task::openSettingsDialog()
     TaskSettingsDialog dialog(this);
     dialog.setTaskName(taskNameLabel->text().remove(QRegExp("<[^>]*>")));
     dialog.setDuration(durationLabel->text().count("⭐"));
+    dialog.setDeadline(deadlineButton->text());
 
     connect(&dialog, &TaskSettingsDialog::taskUpdated, this, &Task::applySettings);
     connect(&dialog, &TaskSettingsDialog::taskDeleted, this, &Task::deleteTask);
@@ -107,10 +112,11 @@ void Task::openSettingsDialog()
     dialog.exec();
 }
 
-void Task::applySettings(const QString &name, int duration)
+void Task::applySettings(const QString &name, int duration, const QString &deadline)
 {
     setTaskName(name);
     setDuration(duration);
+    setDeadline(deadline);
 }
 
 void Task::deleteTask()

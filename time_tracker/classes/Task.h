@@ -21,6 +21,7 @@ public:
     // Setters
     void setTaskName(const QString &name);
     void setDuration(int duration); // duration should be between 1 and 7
+    void setDeadline(const QString &deadline);
 
 signals:
     // Signals
@@ -37,7 +38,7 @@ private slots:
 
     // Settings dialog functions
     void openSettingsDialog();
-    void applySettings(const QString &name, int duration);
+    void applySettings(const QString &name, int duration, const QString& deadline);
     void deleteTask();
 
 private:

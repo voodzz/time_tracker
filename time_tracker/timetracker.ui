@@ -19,6 +19,16 @@
   <property name="windowTitle">
    <string>TimeTracker</string>
   </property>
+  <widget class="QSpinBox" name="spinBox">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>540</y>
+     <width>48</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
