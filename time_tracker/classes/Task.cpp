@@ -2,15 +2,15 @@
 #include "TimerDialog.h"
 #include <QDebug>
 
-
 // ================================ Constructors & Destructors ==================================
 Task::Task(int taskNumber, QWidget *parent) : QWidget(parent), taskNumber(taskNumber)
 {
     initVariables();
     initLayouts();
     initConnections();
-}
 
+    openSettingsDialog();
+}
 
 // ======================== Setters =========================================
 void Task::setTaskName(const QString &name)
@@ -23,12 +23,29 @@ void Task::setDuration(int duration)
     if (duration < 1 || duration > 7)
         return;
 
+    taskDuration = duration;
     updateDurationIcons(duration);
 }
 
 void Task::setDeadline(const QString &deadline) {
     deadlineButton->setText(deadline);
 }
+
+void Task::setWorkDuration(int duration)
+{
+    workDuration = duration;
+}
+
+void Task::setBreakDuration(int duration)
+{
+    breakDuration = duration;
+}
+
+// ====================== Getters ============================================
+
+int Task::getTaskDuration(){ return taskDuration; }
+int Task::getWorkDuration() const { return workDuration; }
+int Task::getBreakDuration() const { return breakDuration; }
 
 // =========================== Init Functions ================================
 
@@ -46,6 +63,8 @@ void Task::initVariables()
     taskNameLabel->setCursor(Qt::PointingHandCursor);
 
     setDuration(3);
+    setWorkDuration(taskDuration * 25);
+    setBreakDuration(taskDuration * 5);
 }
 
 void Task::initLayouts()
@@ -78,7 +97,6 @@ void Task::updateDurationIcons(int duration)
     durationLabel->setText(icons);
 }
 
-
 // ====================================== On Task Clicked Funtions ===========================
 void Task::onTaskNameClicked()
 {
@@ -97,14 +115,16 @@ void Task::showDeadlineDialog() {
     }
 }
 
-
 // ===================================== Settings Dialog Functions =========================
 void Task::openSettingsDialog()
 {
-    TaskSettingsDialog dialog(this);
+    TaskSettingsDialog dialog(taskDuration, this);
     dialog.setTaskName(taskNameLabel->text().remove(QRegExp("<[^>]*>")));
     dialog.setDuration(durationLabel->text().count("⭐"));
     dialog.setDeadline(deadlineButton->text());
+
+    dialog.setWorkDuration(workDuration);
+    dialog.setBreakDuration(breakDuration);
 
     connect(&dialog, &TaskSettingsDialog::taskUpdated, this, &Task::applySettings);
     connect(&dialog, &TaskSettingsDialog::taskDeleted, this, &Task::deleteTask);

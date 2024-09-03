@@ -1,13 +1,14 @@
 #include "DeadlineDialog.h"
 #include "TaskSettingsDialog.h"
+#include "TimerDialog.h"
 #include <QTime>
 
-
 // =========================== Constructors & Destructors =============================
-TaskSettingsDialog::TaskSettingsDialog(QWidget *parent) : QDialog(parent)
+TaskSettingsDialog::TaskSettingsDialog(int taskDuration, QWidget *parent) : QDialog(parent)
 {
     setWindowTitle("Task Settings");
 
+    this->taskDuration = taskDuration;
     initVariables();
     initLabels();
     initLayouts();
@@ -24,6 +25,7 @@ void TaskSettingsDialog::initVariables()
 
     applyButton = new QPushButton("Apply", this);
     deleteButton = new QPushButton("Delete Task", this);
+    timerStartButton = new QPushButton("Start", this);
 
     deadlineButton= new QPushButton(this);
 }
@@ -42,6 +44,7 @@ void TaskSettingsDialog::initLayouts() {
     layout->addWidget(restTimeLabel, 5, 2);
     layout->addWidget(applyButton, 6, 1);
     layout->addWidget(deleteButton, 6, 2);
+    layout->addWidget(timerStartButton, 7, 1, 1, 2);
     this->setLayout(layout);
 }
 
@@ -60,43 +63,19 @@ void TaskSettingsDialog::initConnections()
     connect(applyButton, &QPushButton::clicked, this, &TaskSettingsDialog::applyChanges);
     connect(deleteButton, &QPushButton::clicked, this, &TaskSettingsDialog::deleteTask);
     connect(deadlineButton, &QPushButton::clicked, this, &TaskSettingsDialog::showDeadlineDialog);
-    connect(durationSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), [=](int i){
-        workTimeLabel->setText(QString::number(i * 25) + " minutes");
-        int restTime{};
-        if (i - 4 >= 1) {
-            restTime = 25 + (i - 2) * 5;
-        } else {
-            restTime = (i - 1) * 5;
-        }
-        restTimeLabel->setText(QString::number(restTime) + " minutes");
-    });
+    connect(timerStartButton, &QPushButton::clicked, this, &TaskSettingsDialog::openTimerDialog);
 }
 
-// ============================ Setters ==================================================
-void TaskSettingsDialog::setTaskName(const QString &name)
+// ============================== Main Functionality =====================================
+
+void TaskSettingsDialog::openTimerDialog()
 {
-    nameEdit->setText(name);
+    TimerDialog dialog(&workDuration, &breakDuration, this); // Передаем указатели
+    dialog.exec();
 }
 
-void TaskSettingsDialog::setDuration(int duration)
-{
-    durationSpinBox->setValue(duration);
-}
-
-void TaskSettingsDialog::setDeadline(const QString &deadline) {
-    deadlineButton->setText(deadline);
-}
-
-// ============================= Slots ===================================================
-void TaskSettingsDialog::applyChanges()
-{
+void TaskSettingsDialog::applyChanges() {
     emit taskUpdated(nameEdit->text(), durationSpinBox->value(), deadlineButton->text());
-    accept();
-}
-
-void TaskSettingsDialog::deleteTask()
-{
-    emit taskDeleted();
     accept();
 }
 
@@ -104,9 +83,41 @@ void TaskSettingsDialog::showDeadlineDialog() {
     DeadlineDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
         QDate selectedDate = dialog.selectedDate();
-        QPushButton *button = qobject_cast<QPushButton*>(sender());
-        if (button) {
-            button->setText(selectedDate.toString("dd.MM"));
-        }
+        deadlineButton->setText(selectedDate.toString("dd.MM"));
     }
 }
+
+// ============================== Setters ===========================================
+void TaskSettingsDialog::setTaskName(const QString &name) {
+    nameEdit->setText(name);
+}
+
+void TaskSettingsDialog::setDuration(int duration) {
+    durationSpinBox->setValue(duration);
+}
+
+void TaskSettingsDialog::setDeadline(const QString &deadline) {
+    deadlineButton->setText(deadline);
+}
+
+void TaskSettingsDialog::setWorkDuration(int duration)
+{
+    workDuration = duration;
+    workTimeLabel->setText(QString::number(duration) + " minutes");
+}
+
+void TaskSettingsDialog::setBreakDuration(int duration)
+{
+    breakDuration = duration;
+    restTimeLabel->setText(QString::number(duration) + " minutes");
+}
+
+// ============================= Slots ===================================================
+
+
+void TaskSettingsDialog::deleteTask()
+{
+    emit taskDeleted();
+    accept();
+}
+

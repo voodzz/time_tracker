@@ -9,6 +9,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QTextEdit>
+#include "TimerDialog.h"
 
 class TaskSettingsDialog : public QDialog
 {
@@ -16,12 +17,14 @@ class TaskSettingsDialog : public QDialog
 
 public:
     // Constructors & Destructors
-    explicit TaskSettingsDialog(QWidget *parent = nullptr);
+    explicit TaskSettingsDialog(int taskDuration, QWidget *parent = nullptr);
 
     // Setters
     void setTaskName(const QString &name);
     void setDuration(int duration);
     void setDeadline(const QString& deadline);
+    void setWorkDuration(int duration);
+    void setBreakDuration(int duration);
 
 signals:
     // Signals
@@ -33,6 +36,8 @@ private slots:
     void applyChanges();
     void deleteTask();
     void showDeadlineDialog();
+    void openTimerDialog();
+
 private:
     // Variables
     QLineEdit *nameEdit;
@@ -40,6 +45,7 @@ private:
     QPushButton *applyButton;
     QPushButton *deleteButton;
     QPushButton *deadlineButton;
+    QPushButton *timerStartButton;
 
     // Layouts
     QGridLayout *layout;
@@ -52,6 +58,10 @@ private:
     QLabel *workTimeLabel;
     QLabel *restTimeTextLabel;
     QLabel *restTimeLabel;
+
+    int taskDuration;
+    int workDuration;
+    int breakDuration;
 
     // Init Functions
     void initVariables();

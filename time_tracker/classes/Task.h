@@ -23,6 +23,15 @@ public:
     void setDuration(int duration); // duration should be between 1 and 7
     void setDeadline(const QString &deadline);
 
+    // Getters
+    int getTaskDuration();
+    int getWorkDuration() const;
+    int getBreakDuration() const;
+
+    // Setters for work and break durations
+    void setWorkDuration(int duration);
+    void setBreakDuration(int duration);
+
 signals:
     // Signals
     void taskNameClicked();
@@ -42,7 +51,6 @@ private slots:
     void deleteTask();
 
 private:
-
     // Variables
     QPushButton *deadlineButton; // Button to left of task name
     QLabel *taskNameLabel; // Name
@@ -52,6 +60,9 @@ private:
     QHBoxLayout *mainLayout;
 
     int taskNumber; // Temporary
+    int taskDuration; // Overall task duration
+    int workDuration; // Work duration
+    int breakDuration; // Break duration
 
     // Init functions
     void initVariables();
