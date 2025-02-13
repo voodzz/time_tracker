@@ -4,10 +4,20 @@
     background-color: #505050;
 }
 
+
+/* scroll area on list page */
+#taskContainer {
+    background-color: #505050;
+}
+
+#scrollArea {
+    border: none;
+}
+
 /* side menu */
 #sideMenu {
     background-color: #3c3c3c;
-    border: 0px;
+    border: none;
 }
 
 /* Buttons in side menu */
@@ -83,15 +93,25 @@ QPushButton#menuButton {
     font-family: 'Varela Round';
 }
 
+/* tasks buttons */
+
+#taskName {
+    color: white;
+    font-size: 14px;
+    border: none;
+    background-color: #505050;
+}
+
 #addTaskButton {
     color: white;
     border: none;
+    border-radius: 25px;
     padding: 10px;
     background-color: #3c3c3c;
     font-size: 25px;
     font-family: 'Varela Round';
     qproperty-iconSize: 30px 30px;
-    text-align:left;
+    text-align:center;
 }
 
 #addTaskButton:hover {

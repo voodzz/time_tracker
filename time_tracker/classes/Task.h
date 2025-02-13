@@ -53,7 +53,7 @@ private slots:
 private:
     // Variables
     QPushButton *deadlineButton; // Button to left of task name
-    QLabel *taskNameLabel; // Name
+    QPushButton *taskNameButton; // Name
     QLabel *durationLabel; // Duration
 
     // Layouts

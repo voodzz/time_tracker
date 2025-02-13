@@ -9,6 +9,8 @@ TaskSettingsDialog::TaskSettingsDialog(int taskDuration, QWidget *parent) : QDia
     setWindowTitle("Task Settings");
 
     this->taskDuration = taskDuration;
+    //setWorkDuration(taskDuration * 25);
+    //setBreakDuration(taskDuration * 5);
     initVariables();
     initLabels();
     initLayouts();
@@ -71,6 +73,7 @@ void TaskSettingsDialog::initConnections()
 void TaskSettingsDialog::openTimerDialog()
 {
     TimerDialog dialog(&workDuration, &breakDuration, this); // Передаем указатели
+    this->close();
     dialog.exec();
 }
 

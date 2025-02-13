@@ -15,7 +15,7 @@ Task::Task(int taskNumber, QWidget *parent) : QWidget(parent), taskNumber(taskNu
 // ======================== Setters =========================================
 void Task::setTaskName(const QString &name)
 {
-    taskNameLabel->setText(QString("<a href='#'>%1</a>").arg(name));
+    taskNameButton->setText(QString("%1").arg(name));
 }
 
 void Task::setDuration(int duration)
@@ -24,6 +24,8 @@ void Task::setDuration(int duration)
         return;
 
     taskDuration = duration;
+    setWorkDuration(taskDuration * 25);
+    setBreakDuration(taskDuration * 5);
     updateDurationIcons(duration);
 }
 
@@ -52,15 +54,14 @@ int Task::getBreakDuration() const { return breakDuration; }
 void Task::initVariables()
 {
     deadlineButton = new QPushButton(this);
-    taskNameLabel = new QLabel(this);
+    taskNameButton = new QPushButton(this);
+    taskNameButton->setObjectName("taskName");
     durationLabel = new QLabel(this);
 
-    taskNameLabel->setText("<a href='#'>Task Name</a>");
-    taskNameLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-    taskNameLabel->setOpenExternalLinks(false);
+    taskNameButton->setText("Task Name");
 
     deadlineButton->setCursor(Qt::PointingHandCursor);
-    taskNameLabel->setCursor(Qt::PointingHandCursor);
+    taskNameButton->setCursor(Qt::PointingHandCursor);
 
     setDuration(3);
     setWorkDuration(taskDuration * 25);
@@ -72,7 +73,7 @@ void Task::initLayouts()
     mainLayout = new QHBoxLayout(this);
 
     mainLayout->addWidget(deadlineButton);
-    mainLayout->addWidget(taskNameLabel);
+    mainLayout->addWidget(taskNameButton);
     mainLayout->addWidget(durationLabel);
 
     mainLayout->addStretch();
@@ -82,7 +83,7 @@ void Task::initLayouts()
 
 void Task::initConnections()
 {
-    connect(taskNameLabel, &QLabel::linkActivated, this, &Task::openSettingsDialog);
+    connect(taskNameButton, &QPushButton::clicked, this, &Task::openSettingsDialog);
     connect(deadlineButton, &QPushButton::clicked, this, &Task::showDeadlineDialog);
 }
 
@@ -119,7 +120,7 @@ void Task::showDeadlineDialog() {
 void Task::openSettingsDialog()
 {
     TaskSettingsDialog dialog(taskDuration, this);
-    dialog.setTaskName(taskNameLabel->text().remove(QRegExp("<[^>]*>")));
+    dialog.setTaskName(taskNameButton->text());
     dialog.setDuration(durationLabel->text().count("⭐"));
     dialog.setDeadline(deadlineButton->text());
 

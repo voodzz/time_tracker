@@ -108,6 +108,7 @@ void TimeTracker::initLayouts()
 {
     // Create the task container and scroll area
     taskContainer = new QWidget(this);
+    taskContainer->setObjectName("taskContainer");
     taskLayout = new QGridLayout(taskContainer);
     taskLayout->setVerticalSpacing(10);
     taskLayout->setHorizontalSpacing(10);
@@ -115,6 +116,7 @@ void TimeTracker::initLayouts()
     taskContainer->setLayout(taskLayout);
 
     scrollArea = new QScrollArea(listPage);
+    scrollArea->setObjectName("scrollArea");
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(taskContainer);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -206,6 +208,8 @@ void TimeTracker::initConnections()
     // Connect the theme setting arrows
     connect(leftArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
     connect(rightArrowThemeSettingButton, &QPushButton::clicked, this, &TimeTracker::toggleStyle);
+
+    // Connect a task button
     connect(addTaskButton, &QPushButton::clicked, this, &TimeTracker::addTask);
 
 }
@@ -214,6 +218,7 @@ void TimeTracker::initWidgets()
 {
     //Pages
     listPage = new QWidget(this);
+    listPage->setObjectName("listPage");
     statPage = new QWidget(this);
     settPage = new QWidget(this);
 
