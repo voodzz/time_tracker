@@ -1,6 +1,9 @@
 #ifndef TIMETRACKER_H
 #define TIMETRACKER_H
 
+#include "classes/Task.h"
+#include "classes/DeadlineDialog.h"
+
 #include <QTabWidget>
 #include <QTabBar>
 #include <QMenu>
@@ -15,8 +18,7 @@
 #include <QGridLayout>
 #include <QParallelAnimationGroup>
 #include <QScrollBar>
-#include "classes/Task.h"
-#include "classes/DeadlineDialog.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

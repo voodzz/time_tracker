@@ -5,10 +5,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
-#include <QTextEdit>
 #include "TimerDialog.h"
 
 class TaskSettingsDialog : public QDialog
@@ -16,30 +14,29 @@ class TaskSettingsDialog : public QDialog
     Q_OBJECT
 
 public:
-    // Constructors & Destructors
     explicit TaskSettingsDialog(int taskDuration, QWidget *parent = nullptr);
+    ~TaskSettingsDialog();
 
-    // Setters
     void setTaskName(const QString &name);
     void setDuration(int duration);
-    void setDeadline(const QString& deadline);
+    void setDeadline(const QString &deadline);
     void setWorkDuration(int duration);
     void setBreakDuration(int duration);
 
 signals:
-    // Signals
+    // Emitted when settings are applied; Task listens to update its values (including removing a star)
     void taskUpdated(const QString &name, int duration, const QString &deadline);
+    // Emitted when a task should be deleted
     void taskDeleted();
 
 private slots:
-    // Slots
     void applyChanges();
     void deleteTask();
     void showDeadlineDialog();
     void openTimerDialog();
 
 private:
-    // Variables
+    // UI elements for task settings
     QLineEdit *nameEdit;
     QSpinBox *durationSpinBox;
     QPushButton *applyButton;
@@ -47,10 +44,7 @@ private:
     QPushButton *deadlineButton;
     QPushButton *timerStartButton;
 
-    // Layouts
-    QGridLayout *layout;
-
-    // Labels
+    // Labels for displaying additional info
     QLabel *taskNameLabel;
     QLabel *durationLabel;
     QLabel *deadlineLabel;
@@ -59,14 +53,16 @@ private:
     QLabel *restTimeTextLabel;
     QLabel *restTimeLabel;
 
-    int taskDuration;
-    int workDuration;
-    int breakDuration;
+    QGridLayout *layout;
 
-    // Init Functions
+    // Task parameters
+    int taskDuration;  // Number of cycles (stars)
+    int workDuration;  // Work duration in minutes
+    int breakDuration; // Break duration in minutes
+
     void initVariables();
-    void initLayouts();
     void initLabels();
+    void initLayouts();
     void initConnections();
 };
 

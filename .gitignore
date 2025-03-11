@@ -29,6 +29,11 @@
 # build directory because F it
 time_tracker/build
 
+# IDE directories
+time_tracker/.idea
+time_tracker/.vscode
+time_tracker/cmake-build-debug
+
 # Executables
 *.exe
 *.out

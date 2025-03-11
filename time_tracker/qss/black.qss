@@ -4,7 +4,6 @@
     background-color: #505050;
 }
 
-
 /* scroll area on list page */
 #taskContainer {
     background-color: #505050;
@@ -119,5 +118,30 @@ QPushButton#menuButton {
 }
 
 #addTaskButton:pressed {
+    background-color: #404247;
+}
+
+/* Styles for TimerDialog buttons */
+QPushButton#playButton,
+QPushButton#pauseSwitchButton,
+QPushButton#skipButton {
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #3c3c3c;
+    font-size: 16px;
+    font-family: 'Varela Round';
+}
+
+QPushButton#playButton:hover,
+QPushButton#pauseSwitchButton:hover,
+QPushButton#skipButton:hover {
+    background-color: #535353;
+}
+
+QPushButton#playButton:pressed,
+QPushButton#pauseSwitchButton:pressed,
+QPushButton#skipButton:pressed {
     background-color: #404247;
 }
