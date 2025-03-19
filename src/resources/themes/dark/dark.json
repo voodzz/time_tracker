@@ -1,0 +1,10 @@
+{
+    "qssFile": "dark.qss",
+    "font": "VarelaRoundRegular.ttf",
+
+    "menuIcon": "icons/menu.png",
+    "taskIcon": "C:/Instruments/Qt Projects/time_tracker/src/resources/themes/dark/icons/task.png",
+    "historyIcon": "./icons/history.png",
+    "settingsIcon": "./icons/settings.png",
+    "profileIcon": "./icons/theme.png"
+}

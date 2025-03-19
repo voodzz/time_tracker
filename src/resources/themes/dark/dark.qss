@@ -1,0 +1,151 @@
+/* black.qss */
+
+#TimeTracker {
+    background-color: #505050;
+}
+
+/* scroll area on list page */
+#taskContainer {
+    background-color: #505050;
+}
+
+#scrollArea {
+    border: none;
+}
+
+/* side menu */
+#sideMenu {
+    background-color: #3c3c3c;
+    border: none;
+}
+
+/* Buttons in side menu */
+#sideMenu QPushButton {
+    color: white;
+    border: none;
+    padding: 10px;
+    background-color: #3c3c3c;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    qproperty-iconSize: 30px 30px;
+    text-align:left;
+}
+
+#sideMenu QPushButton:hover {
+    background-color: #535353;
+}
+
+#sideMenu QPushButton:pressed {
+    background-color: #404247;
+}
+
+#sideMenu QLabel {
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+#listButton {
+    qproperty-icon: url({{taskIcon}});
+}
+
+#histButton {
+    qproperty-icon: url({{historyIcon}});
+}
+
+#settButton {
+    qproperty-icon: url({{settingsIcon}});
+}
+
+#profButton {
+    qproperty-icon: url({{profileIcon}});
+}
+
+/* main menu button */
+QPushButton#menuButton {
+   border: none;
+   qproperty-icon: url({{menuIcon}}) no-repeat center center;
+}
+
+/* arrow buttons */
+#leftArrowThemeSettingButton {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 25px;
+    font-family: 'Varela Round';
+}
+
+#rightArrowThemeSettingButton {
+    color: white;
+    background: none;
+    border: none;
+    font-size: 25px;
+    font-family: 'Varela Round';
+}
+
+/* Theme labels in the settings page */
+#themeLabel {
+    color: white;
+    font-size: 30px;
+    font-family: 'Varela Round';
+}
+
+#currentThemeLabel {
+    color: white;
+    font-size: 30px;
+    font-family: 'Varela Round';
+}
+
+/* tasks buttons */
+
+#taskName {
+    color: white;
+    font-size: 14px;
+    border: none;
+    background-color: #505050;
+}
+
+#addTaskButton {
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px;
+    background-color: #3c3c3c;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    qproperty-iconSize: 30px 30px;
+    text-align:center;
+}
+
+#addTaskButton:hover {
+    background-color: #535353;
+}
+
+#addTaskButton:pressed {
+    background-color: #404247;
+}
+
+/* Styles for TimerDialog buttons */
+QPushButton#playButton,
+QPushButton#pauseSwitchButton,
+QPushButton#skipButton {
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #3c3c3c;
+    font-size: 16px;
+    font-family: 'Varela Round';
+}
+
+QPushButton#playButton:hover,
+QPushButton#pauseSwitchButton:hover,
+QPushButton#skipButton:hover {
+    background-color: #535353;
+}
+
+QPushButton#playButton:pressed,
+QPushButton#pauseSwitchButton:pressed,
+QPushButton#skipButton:pressed {
+    background-color: #404247;
+}

@@ -27,12 +27,13 @@
 *.lib
 
 # build directory because F it
-time_tracker/build
+build
+
+#README.md (now it is for dev only)
+README.md
 
 # IDE directories
-time_tracker/.idea
-time_tracker/.vscode
-time_tracker/cmake-build-debug
+.vscode
 
 # Executables
 *.exe

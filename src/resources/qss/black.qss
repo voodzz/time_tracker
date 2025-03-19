@@ -48,7 +48,7 @@
     qproperty-icon: url(:/icons/icons/list_icon_white.png);
 }
 
-#statButton {
+#histButton {
     qproperty-icon: url(:/icons/icons/stat_icon_white.png);
 }
 
@@ -57,7 +57,7 @@
 }
 
 /* main menu button */
-QPushButton#menuButton {
+#menuButton {
    border: none;
    qproperty-icon: url(:/icons/icons/menu_icon_lightTheme.png) no-repeat center center;
 }
