@@ -29,9 +29,6 @@
 # build directory because F it
 build
 
-#README.md (now it is for dev only)
-README.md
-
 # IDE directories
 .vscode
 

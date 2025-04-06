@@ -1,0 +1,10 @@
+{
+    "qssFile": "white.qss",
+    "font": "VarelaRoundRegular.ttf",
+
+    "menuIcon": "./icons/menu.png",
+    "taskIcon": "./icons/task.png",
+    "historyIcon": "./icons/history.png",
+    "settingsIcon": "./icons/settings.png",
+    "profileIcon": "./icons/theme.png"
+}

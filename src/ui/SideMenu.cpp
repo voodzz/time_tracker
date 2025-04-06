@@ -5,6 +5,8 @@
 SideMenu::SideMenu(QWidget *parent)
     : QWidget(parent), m_menuWidth(m_collapsedWidth), m_isOpen(false)
 {
+    setAttribute(Qt::WA_StyledBackground, true);
+    setAutoFillBackground(true);
     initWidgets();
     initLayout();
     initConnections();
@@ -14,6 +16,8 @@ SideMenu::SideMenu(QWidget *parent)
 
     m_animation = new QPropertyAnimation(this, "menuWidth", this);
     m_animation->setDuration(300);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    
 
     toggleMenu();
     toggleMenu();
@@ -69,7 +73,7 @@ void SideMenu::setMenuWidth(int width)
 {
     m_menuWidth = width;
     setFixedWidth(m_menuWidth);
-    updateMenuAppearance();
+    //updateMenuAppearance();
 }
 
 void SideMenu::toggleMenu()
@@ -88,15 +92,8 @@ void SideMenu::toggleMenu()
 
 void SideMenu::updateMenuAppearance()
 {
-    if (m_isOpen) {
         listButton->setText("List");
         histButton->setText("History");
         settButton->setText("Settings");
         profButton->setText("Profile");
-    } else {
-        listButton->setText("");
-        histButton->setText("");
-        settButton->setText("");
-        profButton->setText("");
-    }
 }

@@ -15,6 +15,7 @@ public:
 
 private slots:
     void onMenuItemClicked(int index);
+    void onLoginSuccess(int userId);
 
 private:
     void setupUi();

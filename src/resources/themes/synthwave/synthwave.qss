@@ -1,0 +1,156 @@
+/* synthwave.qss */
+
+#time_tracker {
+    background-color: #2b213a;
+}
+
+/* scroll area on list page */
+#scrollAreaList, QCalendarWidget {
+    background-color: #2b213a;
+    border: none;
+}
+
+/* side menu */
+#sideMenu {
+    background-color: #241b2f;
+    border: none;
+}
+
+/* Buttons in side menu */
+#sideMenu QPushButton {
+    color: #ff71ce;
+    border: none;
+    padding: 10px;
+    background-color: #241b2f;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    qproperty-iconSize: 30px 30px;
+    text-align:left;
+}
+
+#sideMenu QPushButton:hover {
+    background-color: #392a4d;
+    color: #01cdfe;
+}
+
+#sideMenu QPushButton:pressed {
+    background-color: #453658;
+    color: #05ffa1;
+}
+
+#sideMenu QLabel {
+    color: #b967ff;
+    font-size: 14px;
+}
+
+#listButton {
+    qproperty-icon: url({{taskIcon}});
+}
+
+#histButton {
+    qproperty-icon: url({{historyIcon}});
+}
+
+#settButton {
+    qproperty-icon: url({{settingsIcon}});
+}
+
+#profButton {
+    qproperty-icon: url({{profileIcon}});
+}
+
+/* main menu button */
+QPushButton#menuButton {
+   border: none;
+   qproperty-icon: url({{menuIcon}}) no-repeat center center;
+}
+
+/* tasks buttons */
+
+#taskName {
+    color: #ff71ce;
+    font-size: 14px;
+    border: none;
+    background-color: #2b213a;
+}
+
+#addTaskButton {
+    color: #01cdfe;
+    border: none;
+    border-radius: 19px;
+    padding: 10px;
+    background-color: #241b2f;
+    font-size: 25px;
+    font-family: 'Varela Round';
+    text-align:center;
+}
+
+#addTaskButton:hover {
+    background-color: #392a4d;
+    color: #05ffa1;
+}
+
+#addTaskButton:pressed {
+    background-color: #453658;
+    color: #fffb96;
+}
+
+#historyHeader {
+    color: #ff71ce;
+    font-size: 20px;
+    padding: 10px;
+}
+
+#historyCalendar {
+    background-color: #2b213a;
+    color: #01cdfe;
+    selection-background-color: #241b2f;
+}
+
+#historyTaskTable {
+    background-color: #241b2f;
+    color: #ff71ce;
+    border: 1px solid #392a4d;
+}
+
+#historyTaskTable QHeaderView::section {
+    background-color: #392a4d;
+    color: #01cdfe;
+    padding: 4px;
+    border: 1px solid #453658;
+}
+
+/* Additional synthwave-specific styles */
+QLineEdit {
+    background-color: #241b2f;
+    color: #ff71ce;
+    border: 1px solid #392a4d;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+QLineEdit:focus {
+    border: 1px solid #01cdfe;
+}
+
+QPushButton {
+    color: #01cdfe;
+    background-color: #241b2f;
+    border: 1px solid #392a4d;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+QPushButton:hover {
+    background-color: #392a4d;
+    color: #05ffa1;
+}
+
+QPushButton:pressed {
+    background-color: #453658;
+    color: #fffb96;
+}
+
+QLabel {
+    color: #ff71ce;
+}

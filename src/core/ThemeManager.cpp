@@ -13,10 +13,15 @@ ThemeManager::ThemeManager(QObject *parent)
 {
     m_baseThemePath = "C:\\Instruments\\Qt Projects\\time_tracker\\src\\resources\\themes\\";
     
-    QSettings settings;
-    m_currentTheme = settings.value("theme", "").toString();
+    QSettings settings(QSettings::NativeFormat, QSettings::UserScope, "voodz_d1sh0w", "time_tracker");;
+    if (settings.contains("theme")) {
+        m_currentTheme = settings.value("theme").toString();
+        qDebug() << "TME: Read theme from QSettings:" << m_currentTheme;
+    } else {
+        qDebug() << "TME: 'theme' key is missing in QSettings";
+    }
     if (!m_currentTheme.isEmpty()) {
-        applyTheme(m_currentTheme);
+            applyTheme(m_currentTheme);
     }
 }
 
@@ -74,36 +79,41 @@ bool ThemeManager::applyTheme(const QString &themeName)
     QString qss = qssFile.readAll();
     qssFile.close();
 
-QRegularExpression re("\\{\\{(\\w+)\\}\\}");
-QRegularExpressionMatchIterator i = re.globalMatch(qss);
-while (i.hasNext()) {
-    QRegularExpressionMatch match = i.next();
-    QString key = match.captured(1);
-    qDebug() << "TME: json key: " << key;
-    
-    QString replacement = jsonObj.value(key).toString();
-    if (replacement.isEmpty()) continue;
+    QRegularExpression re("\\{\\{(\\w+)\\}\\}");
+    QRegularExpressionMatchIterator i = re.globalMatch(qss);
+    while (i.hasNext())
+    {
+        QRegularExpressionMatch match = i.next();
+        QString key = match.captured(1);
+        qDebug() << "TME: json key: " << key;
 
-    QFileInfo iconFileInfo(themeDir.filePath(replacement));
-    if (iconFileInfo.exists() && iconFileInfo.isFile()) {
-        replacement = QUrl::fromLocalFile(iconFileInfo.absoluteFilePath()).toString();
-    } else if (replacement.startsWith("file:///")) {
-        replacement = QUrl(replacement).toString();
+        QString replacement = jsonObj.value(key).toString();
+        if (replacement.isEmpty())
+            continue;
+
+        QFileInfo iconFileInfo(themeDir.filePath(replacement));
+        if (iconFileInfo.exists() && iconFileInfo.isFile())
+        {
+            replacement = QUrl::fromLocalFile(iconFileInfo.absoluteFilePath()).toString();
+        }
+        else if (replacement.startsWith("file:///"))
+        {
+            replacement = QUrl(replacement).toString();
+        }
+
+        if (replacement.startsWith("file:///"))
+        {
+            replacement.remove(0, 8);
+        }
+
+        qDebug() << "TME: replacement: " << replacement;
+        qss.replace(match.captured(0), replacement);
     }
-
-    if (replacement.startsWith("file:///")) {
-        replacement.remove(0, 8);
-    }
-
-    qDebug() << "TME: replacement: " << replacement;
-    qss.replace(match.captured(0), replacement);
-}
-
 
     qApp->setStyleSheet(qss);
 
     m_currentTheme = themeName;
-    QSettings settings;
+    QSettings settings(QSettings::NativeFormat, QSettings::UserScope, "voodz_d1sh0w", "time_tracker");;
     settings.setValue("theme", themeName);
     qDebug() << "Theme" << themeName << "applied.";
     return true;

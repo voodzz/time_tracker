@@ -20,6 +20,7 @@ protected:
 
 private slots:
     void changeTheme();
+    void changeStarEmoji();
 
 private:
     QGridLayout *m_mainLayout;
@@ -29,7 +30,13 @@ private:
     QGridLayout *m_themeLayout;
     QLabel *m_themeLabel;
     QComboBox *m_themeComboBox;
-    QPushButton *m_applyButton;
+    QPushButton *m_applyThemeButton;
+
+    QGroupBox *m_emojiGroup;
+    QGridLayout *m_emojiLayout;
+    QLabel *m_emojiLabel;
+    QComboBox *m_emojiComboBox;
+    QPushButton *m_applyEmojiButton;
 };
 
 #endif // SETTINGSPAGE_H
