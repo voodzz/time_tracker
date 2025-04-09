@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QDate>
+#include <QVariantMap>
 
 enum class TaskStatus {
     Active,
@@ -29,9 +30,16 @@ public:
     int remainingCycles() const { return m_remainingCycles; }
     TaskStatus status() const { return m_status; }
 
+    void setTaskName(const QString &name) { m_taskName = name; updateDisplay(); }
+    void setDescription(const QString &description) { m_description = description; updateDisplay(); }
+    void setDeadline(const QDate &deadline) { m_deadline = deadline; updateDisplay(); }
+    void setPlannedCycles(int cycles) { m_plannedCycles = cycles; updateDisplay(); }
+    void setRemainingCycles(int cycles) { m_remainingCycles = cycles; updateDisplay(); emit remainingCyclesChanged(cycles); }
+    void setStatus(TaskStatus status) { m_status = status; updateDisplay(); }
+    void setId(int id) { m_id = id; }
     void updateTask(const QString &name, const QString &description, const QDate &deadline, int plannedCycles);
     void updateCycles(int cycles);
-    void setId(int id) { m_id = id; };
+    void updateDisplay();
 
     static QString toString(TaskStatus status) {
         switch (status) {
@@ -47,19 +55,17 @@ public:
     }
 
 signals:
-    void taskUpdated(Task* task);
-    void taskDeleted(Task* task);
-    void startTimer(Task* task);
-    void statusChanged(TaskStatus status);
-    void updateRequested(Task* task, const QString &name, const QString &description, const QDate &deadline, int plannedCycles);
-
+    void taskDeleted(int taskId);
+    void taskUpdated(int taskId, const QVariantMap &data);
+    void taskCompleted(int taskId, const QVariantMap &taskData);
+    void startTimer();
+    void remainingCyclesChanged(int cycles);
 
 private slots:
     void openTaskSettings();
 
 private:
     void setupUi();
-    void updateDisplay();
 
     int m_id;
     QString m_taskName;

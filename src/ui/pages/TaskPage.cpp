@@ -1,104 +1,225 @@
 #include "TaskPage.h"
-#include "../../core/Task.h"
-#include "../TimerWindow.h"
-#include <QDate>
+#include "../widgets/PomodoroTimer.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLineEdit>
 #include <QLabel>
+#include <QMessageBox>
+#include <QScrollArea>
 #include <QDebug>
-#include <algorithm>
 
 TaskPage::TaskPage(int userId, QWidget *parent, HistoryPage *historyPage)
-    : BasePage(parent)
+    : BasePage(parent), m_userId(userId), m_historyPage(historyPage), m_tasks()
 {
-    // Создаем TaskManager с идентификатором пользователя
     m_taskManager = new TaskManager(userId, this);
     setupUi();
-    connect(m_taskManager, &TaskManager::taskAdded, this, &TaskPage::onTaskAdded);
-    connect(m_taskManager, &TaskManager::taskRemoved, this, &TaskPage::onTaskRemoved);
-
-    // Загружаем задачи из БД при старте
-    m_taskManager->loadTasksFromDB();
+    setupConnections();
+    loadTasks();
 }
-
-TaskPage::~TaskPage() { }
 
 void TaskPage::setupUi()
 {
-    m_mainLayout = new QVBoxLayout(this);
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
-    m_addTaskButton = new QPushButton(tr("+"), this);
-    m_addTaskButton->setObjectName("addTaskButton");
-    connect(m_addTaskButton, &QPushButton::clicked, this, &TaskPage::onAddTask);
+    // Left panel with tasks
+    QWidget *tasksPanel = new QWidget(this);
+    tasksPanel->setObjectName("tasksPanel");
+    QVBoxLayout *tasksPanelLayout = new QVBoxLayout(tasksPanel);
 
-    m_taskContainer = new QWidget(this);
-    m_taskLayout = new QVBoxLayout(m_taskContainer);
-    m_taskLayout->setSpacing(10);
-    m_taskLayout->setContentsMargins(10, 10, 10, 10);
-    m_taskLayout->addStretch();
-    m_taskContainer->setLayout(m_taskLayout);
-    m_taskContainer->setObjectName("scrollAreaList");
+    // Add task section
+    QHBoxLayout *addTaskLayout = new QHBoxLayout;
+    m_taskInput = new QLineEdit(this);
+    m_taskInput->setPlaceholderText(tr("Enter new task"));
+    m_addButton = new QPushButton(tr("Add Task"), this);
+    addTaskLayout->addWidget(m_taskInput);
+    addTaskLayout->addWidget(m_addButton);
+    tasksPanelLayout->addLayout(addTaskLayout);
 
-    m_scrollArea = new QScrollArea(this);
-    m_scrollArea->setWidgetResizable(true);
-    m_scrollArea->setWidget(m_taskContainer);
-    m_scrollArea->setObjectName("scrollAreaList");
+    // Tasks list
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    m_tasksContainer = new QWidget(scrollArea);
+    m_tasksContainer->setObjectName("tasksContainer");
+    m_tasksLayout = new QVBoxLayout(m_tasksContainer);
+    m_tasksLayout->setAlignment(Qt::AlignTop);
+    
+    scrollArea->setWidget(m_tasksContainer);
+    tasksPanelLayout->addWidget(scrollArea);
 
-    m_mainLayout->addWidget(m_scrollArea);
-    m_mainLayout->addWidget(m_addTaskButton, 0, Qt::AlignCenter);
-    setLayout(m_mainLayout);
+    // Right panel with timer
+    QWidget *timerPanel = new QWidget(this);
+    timerPanel->setObjectName("timerPanel");
+    QVBoxLayout *timerPanelLayout = new QVBoxLayout(timerPanel);
+
+    m_pomodoroTimer = new PomodoroTimer(this);
+    timerPanelLayout->addWidget(m_pomodoroTimer);
+    timerPanelLayout->addStretch();
+
+    // Set layout
+    mainLayout->addWidget(tasksPanel, 1);
+    mainLayout->addWidget(timerPanel, 1);
+    setLayout(mainLayout);
 }
 
-void TaskPage::onAddTask()
+void TaskPage::setupConnections()
 {
-    // Пример: добавить новую задачу с текущей датой + 1 день, 3 цикла и описанием по умолчанию.
-    QString name = tr("Task %1").arg(m_taskManager->tasks().size() + 1);
-    QDate deadline = QDate::currentDate().addDays(1);
-    int cycles = 3;
-    QString description = tr("Task description...");
-    m_taskManager->addTask(name, deadline, cycles, description);
-    sortTasks();
+    // UI connections
+    connect(m_addButton, &QPushButton::clicked, this, &TaskPage::onAddTaskClicked);
+    connect(m_taskInput, &QLineEdit::returnPressed, this, &TaskPage::onAddTaskClicked);
+
+    // TaskManager connections
+    connect(m_taskManager, &TaskManager::taskCreated, this, &TaskPage::onTaskCreated);
+    connect(m_taskManager, &TaskManager::taskUpdated, this, &TaskPage::onTaskUpdated);
+    connect(m_taskManager, &TaskManager::taskDeleted, this, &TaskPage::onTaskDeleted);
+    connect(m_taskManager, &TaskManager::taskCompleted, this, &TaskPage::onTaskCompleted);
+    connect(m_taskManager, &TaskManager::error, this, &TaskPage::showError);
+
+    // Timer connections
+    connect(m_pomodoroTimer, &PomodoroTimer::phaseCompleted, this, &TaskPage::onPomodoroPhaseCompleted);
 }
 
-void TaskPage::onTaskAdded(Task *task)
+void TaskPage::loadTasks()
 {
-    connect(task, &Task::startTimer, this, [this, task]() {
-        TimerWindow *timerWindow = new TimerWindow(nullptr, task->remainingCycles());
-
-        connect(timerWindow, &TimerWindow::phaseCompleted, this, [this, task]() {
-            task->updateCycles(1);
-        });
-
-        connect(timerWindow, &TimerWindow::workEnd, this, [this, timerWindow](){
-           timerWindow->deleteLater();
-        });
-        
-        timerWindow->show();
-    });
-
-    task->setParent(m_taskContainer);
-    m_taskLayout->addWidget(task);
-}
-
-void TaskPage::onTaskRemoved(Task *task)
-{
-    m_taskLayout->removeWidget(task);
-}
-
-void TaskPage::sortTasks()
-{
-    auto tasks = m_taskManager->tasks();
-    std::sort(tasks.begin(), tasks.end(), [](Task* a, Task* b) {
-        return a->deadline() < b->deadline();
-    });
-
+    // Clear existing tasks
     QLayoutItem *child;
-    while ((child = m_taskLayout->takeAt(0)) != nullptr) {
+    while ((child = m_tasksLayout->takeAt(0)) != nullptr) {
         if (child->widget()) {
-            m_taskLayout->removeWidget(child->widget());
+            delete child->widget();
         }
         delete child;
     }
 
-    for (Task* task : tasks) {
-        m_taskLayout->addWidget(task);
+    // Load tasks from TaskManager
+    QList<QVariantMap> tasks = m_taskManager->getAllTasks();
+    for (const QVariantMap &taskData : tasks) {
+        Task *task = new Task(taskData["id"].toInt(), this);
+        task->setTaskName(taskData["name"].toString());
+        task->setDescription(taskData["description"].toString());
+        task->setDeadline(taskData["deadline"].toDateTime().date());
+        task->setPlannedCycles(taskData["planned_cycles"].toInt());
+        task->setRemainingCycles(taskData["remaining_cycles"].toInt());
+        task->setStatus(static_cast<TaskStatus>(taskData["status"].toInt()));
+        
+        connect(task, &Task::taskCompleted, this, &TaskPage::onTaskCompleted);
+        connect(task, &Task::startTimer, m_pomodoroTimer, &PomodoroTimer::startTimer);
+        connect(task, &Task::remainingCyclesChanged, this, [this, task](int cycles) {
+            task->updateDisplay();
+        });
+        connect(task, &Task::taskUpdated, m_taskManager, &TaskManager::updateTask);
+        connect(task, &Task::taskUpdated, this, &TaskPage::onTaskUpdated);
+        connect(task, &Task::taskDeleted, m_taskManager, &TaskManager::deleteTask);
+        
+        m_tasksLayout->addWidget(task);
+        m_tasks[taskData["id"].toInt()] = task;
     }
+}
+
+void TaskPage::createTaskWidget(const QVariantMap &taskData)
+{
+    Task *task = new Task(taskData["id"].toInt(), this);
+    task->setTaskName(taskData["name"].toString());
+    task->setDescription(taskData["description"].toString());
+    task->setDeadline(taskData["deadline"].toDateTime().date());
+    task->setPlannedCycles(taskData["planned_cycles"].toInt());
+    task->setRemainingCycles(taskData["remaining_cycles"].toInt());
+    task->setStatus(static_cast<TaskStatus>(taskData["status"].toInt()));
+    
+    connect(task, &Task::taskCompleted, this, &TaskPage::onTaskCompleted);
+    connect(task, &Task::startTimer, m_pomodoroTimer, &PomodoroTimer::startTimer);
+    connect(task, &Task::remainingCyclesChanged, this, [this, task](int cycles) {
+        task->updateDisplay();
+    });
+    connect(task, &Task::taskUpdated, m_taskManager, &TaskManager::updateTask);
+    connect(task, &Task::taskUpdated, this, &TaskPage::onTaskUpdated);
+    connect(task, &Task::taskDeleted, m_taskManager, &TaskManager::deleteTask);
+    
+    m_tasksLayout->addWidget(task);
+    m_tasks[taskData["id"].toInt()] = task;
+}
+
+void TaskPage::onAddTaskClicked()
+{
+    QString taskName = m_taskInput->text().trimmed();
+    if (!taskName.isEmpty()) {
+        m_taskManager->createTask(taskName);
+        m_taskInput->clear();
+    }
+}
+
+void TaskPage::onTaskCreated(int taskId, const QVariantMap &taskData)
+{
+    createTaskWidget(taskData);
+}
+
+void TaskPage::onTaskUpdated(int taskId, const QVariantMap &taskData)
+{
+    bool found = false;
+    for (int i = 0; i < m_tasksLayout->count(); ++i) {
+        if (Task *task = qobject_cast<Task*>(m_tasksLayout->itemAt(i)->widget())) {
+            if (task->id() == taskId) {
+                found = true;
+                task->setTaskName(taskData["name"].toString());
+                task->setDescription(taskData["description"].toString());
+                task->setDeadline(taskData["deadline"].toDateTime().date());
+                task->setPlannedCycles(taskData["planned_cycles"].toInt());
+                task->setRemainingCycles(taskData["remaining_cycles"].toInt());
+                if (taskData.contains("status")) {
+                    task->setStatus(static_cast<TaskStatus>(taskData["status"].toInt()));
+                }
+                task->updateDisplay();
+                break;
+            }
+        }
+    }
+
+    if (!found) {
+        qDebug() << "Warning: Task widget not found for update, creating new widget";
+        createTaskWidget(taskData);
+    }
+
+    if (m_historyPage) {
+        m_historyPage->loadHistory();
+    }
+}
+
+void TaskPage::onTaskDeleted(int taskId, const QVariantMap &taskData)
+{
+    // Find and remove the task widget
+    for (int i = 0; i < m_tasksLayout->count(); ++i) {
+        if (Task *task = qobject_cast<Task*>(m_tasksLayout->itemAt(i)->widget())) {
+            if (task->id() == taskId) {
+                m_tasksLayout->removeWidget(task);
+                task->deleteLater();
+                break;
+            }
+        }
+    }
+    if (m_historyPage) {
+        m_historyPage->loadHistory();
+    }
+}
+
+void TaskPage::onTaskCompleted(int taskId, const QVariantMap &taskData)
+{
+    if (m_tasks.contains(taskId)) {
+        Task *task = m_tasks[taskId];
+        task->setStatus(static_cast<TaskStatus>(taskData["status"].toInt()));
+        task->updateDisplay();
+    }
+}
+
+void TaskPage::onPomodoroPhaseCompleted(PomodoroPhase phase)
+{
+    if (phase == PomodoroPhase::Work && m_activeTaskId != -1) {
+        // Record completed pomodoro for the active task
+        m_taskManager->recordPomodoro(m_activeTaskId);
+    }
+}
+
+void TaskPage::showError(const QString &message)
+{
+    QMessageBox::warning(this, tr("Error"), message);
 }

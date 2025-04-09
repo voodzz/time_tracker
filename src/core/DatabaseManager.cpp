@@ -205,3 +205,106 @@ bool DatabaseManager::updateTask(const QVariantMap &taskData)
     emit taskUpdated(taskData);
     return true;
 }
+
+bool DatabaseManager::recordPomodoro(const QVariantMap &pomodoroData)
+{
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO task_history (task_id, completed_cycles, interruptions, executed_at) "
+                 "VALUES (:task_id, 1, 0, :timestamp) RETURNING id");
+    query.bindValue(":task_id", pomodoroData["task_id"]);
+    query.bindValue(":timestamp", pomodoroData["timestamp"]);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to record pomodoro:" << query.lastError().text();
+        return false;
+    }
+
+    if (query.next()) {
+        int historyId = query.value(0).toInt();
+        
+        // Update statistics
+        QSqlQuery statsQuery(m_db);
+        statsQuery.prepare(
+            "UPDATE statistics "
+            "SET total_tasks = total_tasks + 1, "
+            "    last_updated = NOW() "
+            "WHERE user_id = (SELECT user_id FROM tasks WHERE id = :task_id)"
+        );
+        statsQuery.bindValue(":task_id", pomodoroData["task_id"]);
+        
+        if (!statsQuery.exec()) {
+            qDebug() << "Failed to update statistics:" << statsQuery.lastError().text();
+            return false;
+        }
+
+        return true;
+    }
+    return false;
+}
+
+int DatabaseManager::getCompletedPomodoros(int taskId) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT SUM(completed_cycles) FROM task_history WHERE task_id = :taskId");
+    query.bindValue(":taskId", taskId);
+    
+    if (!query.exec()) {
+        qDebug() << "Failed to get completed pomodoros:" << query.lastError().text();
+        return -1;
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+    return 0;
+}
+
+QList<QVariantMap> DatabaseManager::getPomodoroStats(int taskId)
+{
+    QList<QVariantMap> stats;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT executed_at, completed_cycles, interruptions "
+                 "FROM task_history "
+                 "WHERE task_id = :taskId "
+                 "ORDER BY executed_at DESC");
+    query.bindValue(":taskId", taskId);
+    
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap record;
+            record["timestamp"] = query.value("executed_at").toDateTime();
+            record["completed_cycles"] = query.value("completed_cycles").toInt();
+            record["interruptions"] = query.value("interruptions").toInt();
+            stats.append(record);
+        }
+    }
+    
+    return stats;
+}
+
+bool DatabaseManager::deleteTask(int taskId)
+{
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM tasks WHERE id = :id");
+    query.bindValue(":id", taskId);
+
+    if (!query.exec()) {
+        qWarning() << "Error deleting task:" << query.lastError().text();
+        return false;
+    }
+
+    // Update statistics for the user
+    QSqlQuery statsQuery(m_db);
+    statsQuery.prepare(
+        "UPDATE statistics "
+        "SET total_tasks = total_tasks - 1, "
+        "pending_tasks = pending_tasks - 1 "
+        "WHERE user_id = (SELECT user_id FROM tasks WHERE id = :id)"
+    );
+    statsQuery.bindValue(":id", taskId);
+
+    if (!statsQuery.exec()) {
+        qWarning() << "Error updating statistics:" << statsQuery.lastError().text();
+    }
+
+    return true;
+}

@@ -32,6 +32,7 @@ class HistoryPage : public QWidget {
 public:
     explicit HistoryPage(int userId, QWidget *parent = nullptr);
     ~HistoryPage();
+    void loadHistory();
 
 private slots:
     // Navigation
@@ -45,7 +46,6 @@ private slots:
 
 private:
     void setupUi();
-    void loadHistory();
     void updateDayCards();
     QString formatTaskDetails(const TaskInfo &task) const;
 

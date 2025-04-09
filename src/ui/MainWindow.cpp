@@ -1,119 +1,145 @@
 #include "MainWindow.h"
-#include <QStackedWidget>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QDebug>
-
-#include "SideMenu.h"
 #include "pages/TaskPage.h"
 #include "pages/HistoryPage.h"
 #include "pages/SettingsPage.h"
 #include "pages/ProfilePage.h"
+#include "pages/StartPage.h"
+#include <QStackedWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent), m_currentUserId(-1), m_startPage(nullptr)
 {
-    setupUi();
-    setupConnections();
-
     setAttribute(Qt::WA_StyledBackground, true);
     setObjectName("time_tracker");
+    
+    setupUi();
+    setupConnections();
+    showLoginPage();
 }
 
-MainWindow::~MainWindow()
-{
-}
+MainWindow::~MainWindow() { }
 
 void MainWindow::setupUi()
 {
     QWidget *centralWidget = new QWidget(this);
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
 
     m_sideMenu = new SideMenu(this);
     m_sideMenu->setObjectName("sideMenu");
-
+    m_sideMenu->hide();
+    
     m_pages = new QStackedWidget(this);
-
-    // Create pages with userId = -1 (unauthorized user)
-    // In ProfilePage, when userId == -1, the login form will be displayed.
-    TaskPage *tasksPage = new TaskPage(-1, this, new HistoryPage(-1, this));
-    tasksPage->setObjectName("taskPage");
-
-    HistoryPage *historyPage = new HistoryPage(-1, this);
-    historyPage->setObjectName("historyPage");
-
-    SettingsPage *settingsPage = new SettingsPage(this);
-    settingsPage->setObjectName("settingsPage");
-
-    ProfilePage *profilePage = new ProfilePage(-1, this);
-    profilePage->setObjectName("profilePage");
-
-    // Add pages to QStackedWidget:
-    // Indices: 0 - TaskPage, 1 - HistoryPage, 2 - SettingsPage, 3 - ProfilePage
-    m_pages->addWidget(tasksPage);        
-    m_pages->addWidget(historyPage);      
-    m_pages->addWidget(settingsPage);     
-    m_pages->addWidget(profilePage);      
+    m_pages->setObjectName("stackedWidget");
+    
+    m_startPage = new StartPage(this);
+    m_startPage->setObjectName("startPage");
 
     mainLayout->addWidget(m_sideMenu);
     mainLayout->addWidget(m_pages);
-    setCentralWidget(centralWidget);
 
-    // Connect the login success signal from ProfilePage
-    connect(profilePage, &ProfilePage::loginSuccess, this, &MainWindow::onLoginSuccess);
+    centralWidget->setLayout(mainLayout);
+    setCentralWidget(centralWidget);
 }
 
 void MainWindow::setupConnections()
 {
     connect(m_sideMenu, &SideMenu::menuItemClicked, this, &MainWindow::onMenuItemClicked);
+    connect(m_startPage, &StartPage::loginSuccess, this, &MainWindow::onLoginSuccess);
+}
+
+void MainWindow::showLoginPage()
+{
+    qDebug() << "Showing login page";
+    // Hide side menu first
+    m_sideMenu->hide();
+    
+    // Remove all pages except start page
+    while (m_pages->count() > 0) {
+        QWidget *widget = m_pages->widget(0);
+        if (widget != m_startPage) {
+            widget->disconnect();
+            m_pages->removeWidget(widget);
+            widget->deleteLater();
+        } else {
+            m_pages->removeWidget(widget);
+        }
+    }
+    
+    // Add and show start page
+    m_pages->addWidget(m_startPage);
+    m_pages->setCurrentWidget(m_startPage);
+
+    // Try auto-login
+    if (!m_startPage->tryAutoLogin()) {
+        // No auto-login possible, stay on login page
+    }
+}
+
+void MainWindow::showMainContent(int userId)
+{
+    qDebug() << "Showing main content for user:" << userId;
+    m_currentUserId = userId;
+    
+    // Remove all pages except start page
+    while (m_pages->count() > 0) {
+        QWidget *widget = m_pages->widget(0);
+        if (widget != m_startPage) {
+            widget->disconnect();
+            m_pages->removeWidget(widget);
+            widget->deleteLater();
+        } else {
+            m_pages->removeWidget(widget);
+        }
+    }
+
+    // Create and add all main pages
+    HistoryPage *historyPage = new HistoryPage(userId, this);
+    historyPage->setObjectName("historyPage");
+    
+    TaskPage *taskPage = new TaskPage(userId, this, historyPage);
+    taskPage->setObjectName("taskPage");
+    
+    SettingsPage *settingsPage = new SettingsPage(this);
+    settingsPage->setObjectName("settingsPage");
+    
+    ProfilePage *profilePage = new ProfilePage(userId, this);
+    profilePage->setObjectName("profilePage");
+    
+    // Connect logout signal from profile page
+    connect(profilePage, &ProfilePage::logoutRequested, this, &MainWindow::onLogoutRequested, Qt::QueuedConnection);
+
+    m_pages->addWidget(taskPage);
+    m_pages->addWidget(historyPage);
+    m_pages->addWidget(settingsPage);
+    m_pages->addWidget(profilePage);
+
+    // Show side menu and first page
+    m_sideMenu->show();
+    m_pages->setCurrentIndex(0);
 }
 
 void MainWindow::onMenuItemClicked(int index)
 {
-    if (index >= 0 && index < m_pages->count()) {
-        m_pages->setCurrentIndex(index);
-    } else {
-        qDebug() << "Invalid menu index:" << index;
-    }
+    if (m_currentUserId == -1) return;
+    m_pages->setCurrentIndex(index);
 }
 
 void MainWindow::onLoginSuccess(int userId)
 {
-    // After successful login, update pages that depend on userId.
-    // Create new instances of pages with the correct userId.
+    showMainContent(userId);
+}
 
-    // Create a new HistoryPage, passing userId
-    HistoryPage *historyPage = new HistoryPage(userId, this);
-    historyPage->setObjectName("historyPage");
-
-    // Create a new TaskPage and pass the new HistoryPage to it
-    TaskPage *taskPage = new TaskPage(userId, this, historyPage);
-    taskPage->setObjectName("taskPage");
-
-    // Create a new ProfilePage using userId
-    ProfilePage *profilePage = new ProfilePage(userId, this);
-    profilePage->setObjectName("profilePage");
-
-    // Remove old versions of pages that will be replaced.
-    QWidget *oldTaskPage = m_pages->widget(0);
-    QWidget *oldHistoryPage = m_pages->widget(1);
-    QWidget *oldProfilePage = m_pages->widget(3);
-
-    m_pages->removeWidget(oldTaskPage);
-    m_pages->removeWidget(oldHistoryPage);
-    m_pages->removeWidget(oldProfilePage);
-
-    oldTaskPage->deleteLater();
-    oldHistoryPage->deleteLater();
-    oldProfilePage->deleteLater();
-
-    // Insert new pages at the same indices
-    m_pages->insertWidget(0, taskPage);
-    m_pages->insertWidget(1, historyPage);
-    m_pages->insertWidget(3, profilePage);
-
-    // Switch to the task page after login
-    m_pages->setCurrentIndex(0);
+void MainWindow::onLogoutRequested()
+{
+    qDebug() << "Logout requested";
+    // First set current user id to -1
+    m_currentUserId = -1;
+    
+    // Then show login page, which will clean up other pages
+    showLoginPage();
 }

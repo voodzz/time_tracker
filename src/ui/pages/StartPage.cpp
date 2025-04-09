@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QCryptographicHash>
+#include <QSettings>
 
 StartPage::StartPage(QWidget *parent) : QWidget(parent)
 {
@@ -20,10 +21,12 @@ StartPage::StartPage(QWidget *parent) : QWidget(parent)
     m_loginPassword->setPlaceholderText(tr("Password"));
     m_loginPassword->setEchoMode(QLineEdit::Password);
     m_loginButton = new QPushButton(tr("Sign in"), m_loginWidget);
+    m_rememberMe = new QCheckBox(tr("Remember me"), m_loginWidget);
     m_switchToRegisterButton = new QPushButton(tr("Register"), m_loginWidget);
     loginLayout->addWidget(loginLabel);
     loginLayout->addWidget(m_loginUsername);
     loginLayout->addWidget(m_loginPassword);
+    loginLayout->addWidget(m_rememberMe);
     loginLayout->addWidget(m_loginButton);
     loginLayout->addWidget(m_switchToRegisterButton);
     m_loginWidget->setLayout(loginLayout);
@@ -64,6 +67,10 @@ StartPage::StartPage(QWidget *parent) : QWidget(parent)
     connect(m_switchToLoginButton, &QPushButton::clicked, [this](){
         switchPage(0);
     });
+
+    if (!tryAutoLogin()) {
+        // No auto-login, do nothing
+    }
 }
 
 void StartPage::switchPage(int index)
@@ -79,10 +86,15 @@ void StartPage::onLoginClicked()
         QMessageBox::warning(this, "Error", "Please fill in all fields");
         return;
     }
-    // Hash password (for real projects, use more secure algorithms)
+    
     QByteArray hash = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
-    int userId = DatabaseManager::instance().loginUser(username, hash.toHex());
+    QString passwordHash = hash.toHex();
+    int userId = DatabaseManager::instance().loginUser(username, passwordHash);
+    
     if(userId != -1){
+        if (m_rememberMe->isChecked()) {
+            saveLoginCredentials(username, passwordHash);
+        }
         emit loginSuccess(userId);
     } else {
         QMessageBox::warning(this, "Error", "Invalid login credentials");
@@ -108,3 +120,41 @@ void StartPage::onRegisterClicked()
     }
 }
 
+void StartPage::saveLoginCredentials(const QString &username, const QString &passwordHash)
+{
+    QSettings settings;
+    settings.setValue("auth/username", username);
+    settings.setValue("auth/passwordHash", passwordHash);
+    settings.setValue("auth/rememberMe", true);
+}
+
+void StartPage::clearSavedCredentials()
+{
+    QSettings settings;
+    settings.remove("auth/username");
+    settings.remove("auth/passwordHash");
+    settings.setValue("auth/rememberMe", false);
+}
+
+bool StartPage::tryAutoLogin()
+{
+    QSettings settings;
+    if (!settings.value("auth/rememberMe", false).toBool()) {
+        return false;
+    }
+
+    QString username = settings.value("auth/username").toString();
+    QString passwordHash = settings.value("auth/passwordHash").toString();
+    
+    if (username.isEmpty() || passwordHash.isEmpty()) {
+        return false;
+    }
+
+    int userId = DatabaseManager::instance().loginUser(username, passwordHash);
+    if (userId != -1) {
+        emit loginSuccess(userId);
+        return true;
+    }
+    
+    return false;
+}

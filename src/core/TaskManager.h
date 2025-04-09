@@ -2,52 +2,38 @@
 #define TASKMANAGER_H
 
 #include <QObject>
+#include <QVariantMap>
 #include <QList>
 #include "Task.h"
-#include <QDate>
-
-// Структура для хранения элемента истории задачи (можно использовать ту же, что в HistoryPage)
-struct TaskHistoryItem {
-    QDate date;
-    QString taskName;
-    int cycles;
-};
 
 class TaskManager : public QObject
 {
     Q_OBJECT
 public:
-    // Конструктор принимает идентификатор пользователя, для синхронизации с БД
     explicit TaskManager(int userId, QObject *parent = nullptr);
-    ~TaskManager();
 
-    // Добавление задачи – теперь синхронизируется с БД и возвращает объект Task
-    Task* addTask(const QString &name, const QDate &deadline, int plannedCycles, const QString &description);
-    bool deleteTask(Task *task);
-
-    QList<Task*> tasks() const { return m_tasks; }
-    void loadTasksFromDB();
+    // Task operations
+    QList<QVariantMap> getAllTasks() const;
+    int createTask(const QString &name);
+    bool updateTask(int taskId, const QVariantMap &data);
+    bool deleteTask(int taskId);
+    bool completeTask(int taskId);
+    bool recordPomodoro(int taskId);
+    int getCompletedPomodoros(int taskId);
+    QList<QVariantMap> getPomodoroStats(int taskId);
 
 signals:
-    void taskAdded(Task *task);
-    void taskUpdated(Task *task);
-    void taskRemoved(Task *task);
-
-    // Новый сигнал для уведомления об элементе истории
-    void taskHistoryItemCreated(const TaskHistoryItem &item);
-
-public slots:
-    bool s_updateTask(Task* task, const QString &name, const QString &description, const QDate &deadline, int plannedCycles);
-
-
-private slots:
-    void onTaskUpdated(Task *task);
-    void onTaskDeleted(Task *task);
+    void taskCreated(int taskId, const QVariantMap &taskData);
+    void taskUpdated(int taskId, const QVariantMap &taskData);
+    void taskDeleted(int taskId, const QVariantMap &taskData);
+    void taskCompleted(int taskId, const QVariantMap &taskData);
+    void pomodoroRecorded(int taskId, const QVariantMap &stats);
+    void error(const QString &message, int taskId);
 
 private:
-    QList<Task*> m_tasks;
-    int m_nextId;
     int m_userId;
+    QVariantMap getTaskData(int taskId) const;
+    TaskStatus statusFromString(const QString &statusStr);
 };
 
 #endif // TASKMANAGER_H

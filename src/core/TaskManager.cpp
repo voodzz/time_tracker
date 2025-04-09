@@ -3,127 +3,212 @@
 #include <QDateTime>
 #include <QDebug>
 
-// Constructor: initialize with userId and starting task id
 TaskManager::TaskManager(int userId, QObject *parent)
-    : QObject(parent), m_userId(userId), m_nextId(1)
+    : QObject(parent), m_userId(userId)
 {
 }
 
-TaskManager::~TaskManager()
+QList<QVariantMap> TaskManager::getAllTasks() const
 {
-    qDeleteAll(m_tasks);
-    m_tasks.clear();
+    return DatabaseManager::instance().getTasks(m_userId);
 }
 
-// Add a new task to the database and create the corresponding Task object
-Task* TaskManager::addTask(const QString &name, const QDate &deadline, int plannedCycles, const QString &description)
+int TaskManager::createTask(const QString &name)
 {
-    // Insert task into the database and get its ID
-    int dbId = DatabaseManager::instance().addTask(m_userId,
-                                                   name,
-                                                   description,
-                                                   QDateTime(deadline, QTime(0,0)),
-                                                   plannedCycles,
-                                                   plannedCycles, // initial remaining cycles equals plannedCycles
-                                                   "Active");
-    if (dbId == -1) {
-        qDebug() << "Failed to add task to the database.";
-        return nullptr;
+    int taskId = DatabaseManager::instance().addTask(
+        m_userId,
+        name,
+        tr("New task description..."),
+        QDateTime(QDate::currentDate().addDays(1), QTime(23, 59, 59)),
+        1, // plannedCycles
+        1, // remainingCycles
+        Task::toString(TaskStatus::Active)
+    );
+
+    if (taskId != -1) {
+        QVariantMap taskData;
+        taskData["id"] = taskId;
+        taskData["name"] = name;
+        taskData["description"] = tr("New task description...");
+        taskData["deadline"] = QDateTime(QDate::currentDate().addDays(1), QTime(23, 59, 59));
+        taskData["planned_cycles"] = 1;
+        taskData["remaining_cycles"] = 1;
+        taskData["status"] = static_cast<int>(TaskStatus::Active);
+        emit taskCreated(taskId, taskData);
+        return taskId;
+    } else {
+        emit error(tr("Failed to create task"), taskId);
+        return -1;
+    }
+}
+
+bool TaskManager::updateTask(int taskId, const QVariantMap &data)
+{
+    // Проверяем наличие обязательных полей
+    if (!data.contains("name") || !data.contains("status")) {
+        emit error(tr("Missing required fields for task update"), taskId);
+        return false;
     }
 
-    // Create a new Task object using the database id
-    Task *task = new Task(dbId, nullptr);
-    task->updateTask(name, description, deadline, plannedCycles);
+    // Получаем текущие данные задачи
+    QVariantMap currentTask = getTaskData(taskId);
+    if (currentTask.isEmpty()) {
+        emit error(tr("Task not found"), taskId);
+        return false;
+    }
 
-    m_tasks.append(task);
-    // Connect the updateRequested signal from Task to our updateTask slot for DB synchronization
-    connect(task, &Task::updateRequested, this, &TaskManager::s_updateTask);
-    connect(task, &Task::taskDeleted, this, &TaskManager::onTaskDeleted);
+    // Подготавливаем данные для обновления
+    QVariantMap updateData;
+    updateData["id"] = taskId;
+    updateData["name"] = data.contains("name") ? data["name"] : currentTask["name"];
+    updateData["description"] = data.contains("description") ? data["description"] : currentTask["description"];
+    updateData["deadline"] = data.contains("deadline") ? data["deadline"] : currentTask["deadline"];
+    updateData["planned_cycles"] = data.contains("planned_cycles") ? data["planned_cycles"] : currentTask["planned_cycles"];
+    updateData["remaining_cycles"] = data.contains("remaining_cycles") ? data["remaining_cycles"] : currentTask["remaining_cycles"];
+    updateData["status"] = Task::toString(statusFromString(data["status"].toString())); // Convert TaskStatus to string before storing in QVariantMap
 
-    emit taskAdded(task);
-
-    // Emit history signal (optional)
-    TaskHistoryItem historyItem;
-    historyItem.date = QDate::currentDate(); // can be adjusted as needed
-    historyItem.taskName = task->taskName();
-    historyItem.cycles = plannedCycles;
-    emit taskHistoryItemCreated(historyItem);
-
-    return task;
+    try {
+        if (DatabaseManager::instance().updateTask(updateData)) {
+            emit taskUpdated(taskId, updateData);
+            return true;
+        } else {
+            emit error(tr("Failed to update task in database"), taskId);
+            return false;
+        }
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to update task: ") + QString::fromStdString(e.what()), taskId);
+        return false;
+    }
 }
 
-// Update the task by synchronizing changes with the database.
-// This slot now matches the signal signature: (Task*, name, description, deadline, plannedCycles)
-bool TaskManager::s_updateTask(Task *task, const QString &name, const QString &description, const QDate &deadline, int plannedCycles)
+bool TaskManager::deleteTask(int taskId)
 {
-    qDebug() << "Updating task with id:" << task->id();
-    if (!m_tasks.contains(task))
+    QVariantMap currentTask = getTaskData(taskId);
+    if (currentTask.isEmpty()) {
+        emit error(tr("Task not found"), taskId);
         return false;
+    }
 
+    try {
+        if (DatabaseManager::instance().deleteTask(taskId)) {
+            emit taskDeleted(taskId, currentTask);
+            return true;
+        } else {
+            emit error(tr("Failed to delete task from database"), taskId);
+            return false;
+        }
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to delete task: ") + QString::fromStdString(e.what()), taskId);
+        return false;
+    }
+}
 
-    // Build a QVariantMap for the database update
+bool TaskManager::completeTask(int taskId)
+{
     QVariantMap taskData;
-    taskData["id"] = task->id();
-    taskData["name"] = name;
-    taskData["description"] = description;
-    taskData["deadline"] = QDateTime(deadline, QTime(0,0));
-    taskData["planned_cycles"] = plannedCycles;
-    // For simplicity, assume remaining_cycles resets to plannedCycles on update
-    taskData["remaining_cycles"] = plannedCycles;
-    taskData["status"] = Task::toString(task->status());
+    taskData["id"] = taskId;
+    taskData["user_id"] = m_userId;
+    taskData["status"] = Task::toString(TaskStatus::Completed);
+    taskData["completed_at"] = QDateTime::currentDateTime();
 
-    // Update the task in the database
-    if (!DatabaseManager::instance().updateTask(taskData)) {
-        qDebug() << "Database update failed for task id:" << task->id();
+    try {
+        if (DatabaseManager::instance().updateTask(taskData)) {
+            emit taskCompleted(taskId, taskData);
+            return true;
+        } else {
+            emit error(tr("Failed to complete task"), taskId);
+            return false;
+        }
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to complete task"), taskId);
         return false;
     }
-
-    // Update the task object (UI) if the database update succeeded
-    task->updateTask(name, description, deadline, plannedCycles);
-    emit taskUpdated(task);
-    return true;
 }
 
-bool TaskManager::deleteTask(Task *task)
+bool TaskManager::recordPomodoro(int taskId)
 {
-    if (!m_tasks.contains(task))
+    QVariantMap pomodoroData;
+    pomodoroData["task_id"] = taskId;
+    pomodoroData["timestamp"] = QDateTime::currentDateTime();
+    
+    try {
+        if (DatabaseManager::instance().recordPomodoro(pomodoroData)) {
+            // Update task's remaining cycles
+            QVariantMap taskData;
+            taskData["id"] = taskId;
+            taskData["user_id"] = m_userId;
+            
+            // Get current task data to update remaining cycles
+            QVariantMap currentTask = getTaskData(taskId);
+            if (!currentTask.isEmpty()) {
+                int remainingCycles = currentTask["remaining_cycles"].toInt();
+                if (remainingCycles > 0) {
+                    taskData["remaining_cycles"] = remainingCycles - 1;
+                    
+                    // Update task status if all cycles are completed
+                    if (remainingCycles == 1) {
+                        taskData["status"] = Task::toString(TaskStatus::Completed);
+                    }
+                    
+                    // Update task in database
+                    if (DatabaseManager::instance().updateTask(taskData)) {
+                        QVariantMap stats;
+                        stats["completed_pomodoros"] = getCompletedPomodoros(taskId);
+                        stats["timestamp"] = pomodoroData["timestamp"];
+                        emit pomodoroRecorded(taskId, stats);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } else {
+            emit error(tr("Failed to record pomodoro: DB error"), taskId);
+            return false;
+        }
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to record pomodoro: TM error"), taskId);
         return false;
-    m_tasks.removeOne(task);
-    emit taskRemoved(task);
-    task->deleteLater();
-
-    // Optionally, call DatabaseManager::deleteTask(task->id()) here.
-    return true;
-}
-
-void TaskManager::onTaskUpdated(Task *task)
-{
-    emit taskUpdated(task);
-}
-
-void TaskManager::onTaskDeleted(Task *task)
-{
-    if (m_tasks.contains(task)) {
-        m_tasks.removeOne(task);
-        emit taskRemoved(task);
     }
 }
 
-// Load tasks from the database and create Task objects accordingly
-void TaskManager::loadTasksFromDB()
+int TaskManager::getCompletedPomodoros(int taskId) 
 {
-    QList<QVariantMap> tasksData = DatabaseManager::instance().getTasks(m_userId);
-    for (const QVariantMap &data : tasksData) {
-        int id = data.value("id").toInt();
-        QString name = data.value("name").toString();
-        QString description = data.value("description").toString();
-        QDate deadline = data.value("deadline").toDate();
-        int plannedCycles = data.value("planned_cycles").toInt();
-        // Create a Task object with the retrieved data
-        Task *task = new Task(id, nullptr);
-        task->updateTask(name, description, deadline, plannedCycles);
-        connect(task, &Task::updateRequested, this, &TaskManager::s_updateTask);
-        m_tasks.append(task);
-        emit taskAdded(task);
+    try {
+        return DatabaseManager::instance().getCompletedPomodoros(taskId);
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to get completed pomodoros"), taskId);
+        return -1;
     }
+}
+
+QList<QVariantMap> TaskManager::getPomodoroStats(int taskId)
+{
+    try {
+        return DatabaseManager::instance().getPomodoroStats(taskId);
+    } catch (const std::exception& e) {
+        emit error(tr("Failed to get pomodoro stats"), taskId);
+        return QList<QVariantMap>();
+    }
+}
+
+QVariantMap TaskManager::getTaskData(int taskId) const
+{
+    QList<QVariantMap> tasks = DatabaseManager::instance().getTasks(m_userId);
+    for (const QVariantMap &task : tasks) {
+        if (task["id"].toInt() == taskId) {
+            return task;
+        }
+    }
+    return QVariantMap();
+}
+
+TaskStatus TaskManager::statusFromString(const QString &statusStr)
+{
+    if (statusStr == "Active")
+        return TaskStatus::Active;
+    else if (statusStr == "Completed")
+        return TaskStatus::Completed;
+    else if (statusStr == "Cancelled")
+        return TaskStatus::Cancelled;
+    return TaskStatus::Active; // Default status
 }

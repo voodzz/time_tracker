@@ -23,6 +23,7 @@ public:
 signals:
     // Signal that can be used to notify MainWindow of successful login
     void loginSuccess(int userId);
+    void logoutRequested();
 
 protected:
     void setupUi() override;
@@ -33,6 +34,7 @@ private slots:
     void onSignUpClicked();
     void onShowLoginClicked();
     void onShowSignUpClicked();
+    void onLogoutClicked();
 
 private:
     int m_userId;
@@ -43,6 +45,7 @@ private:
     QLabel *m_createdLabel;
     QLineEdit *m_emailEdit;
     QPushButton *m_saveButton;
+    QPushButton *m_logoutButton;
 
     // Elements for login form
     QLineEdit *m_loginUsername;

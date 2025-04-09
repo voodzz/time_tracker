@@ -5,12 +5,16 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QCheckBox>
 
 class StartPage : public QWidget
 {
     Q_OBJECT
 public:
     explicit StartPage(QWidget *parent = nullptr);
+    
+    // Try to auto-login using saved credentials
+    bool tryAutoLogin();
 
 signals:
     // Сигнал успешного входа, передается id пользователя
@@ -20,6 +24,8 @@ private slots:
     void onLoginClicked();
     void onRegisterClicked();
     void switchPage(int index);
+    void saveLoginCredentials(const QString &username, const QString &passwordHash);
+    void clearSavedCredentials();
 
 private:
     // Форма входа
@@ -27,6 +33,7 @@ private:
     QLineEdit *m_loginUsername;
     QLineEdit *m_loginPassword;
     QPushButton *m_loginButton;
+    QCheckBox *m_rememberMe;
 
     // Форма регистрации
     QWidget *m_registerWidget;

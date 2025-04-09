@@ -109,3 +109,5 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+# Config files with sensitive data
+config.ini

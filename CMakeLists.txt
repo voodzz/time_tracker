@@ -61,6 +61,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/ui/pages/ProfilePage.cpp
         src/ui/pages/StartPage.h
         src/ui/pages/StartPage.cpp
+        #WIDGETS
+        src/ui/widgets/PomodoroTimer.h
+        src/ui/widgets/PomodoroTimer.cpp
         #TESTS
         #tests/test_db.cpp
         ${PROJECT_SOURCES}

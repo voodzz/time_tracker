@@ -5,6 +5,62 @@
 #include <QtSql>
 #include <QVariantMap>
 
+
+/*
+    TABLES STRUCTURE
+1. Таблица пользователей (users)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+2. Таблица задач (tasks)
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    deadline TIMESTAMPTZ,
+    planned_cycles INTEGER NOT NULL,
+    remaining_cycles INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Active', 'Completed', 'Cancelled')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+3. Таблица истории выполнения задач (task_history)
+
+CREATE TABLE task_history (
+    id SERIAL PRIMARY KEY,
+    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    completed_cycles INTEGER NOT NULL,
+    interruptions INTEGER DEFAULT 0,
+    executed_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+5. Таблица статистики (statistics)
+CREATE TABLE statistics (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    total_tasks INTEGER DEFAULT 0,
+    completed_tasks INTEGER DEFAULT 0,
+    pending_tasks INTEGER DEFAULT 0,
+    last_updated TIMESTAMPTZ DEFAULT NOW()
+);
+6. Таблица логов (logs)
+CREATE TABLE logs (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    event TEXT NOT NULL,
+    event_time TIMESTAMPTZ DEFAULT NOW()
+);
+
+*/
+
+
 class DatabaseManager : public QObject
 {
     Q_OBJECT
@@ -40,6 +96,10 @@ public:
     QList<QVariantMap> getTasks(int userId);
     QList<QVariantMap> getTaskHistory(int userId);
     bool updateTask(const QVariantMap &taskData);
+    bool deleteTask(int taskId);
+    bool recordPomodoro(const QVariantMap &pomodoroData);
+    int getCompletedPomodoros(int taskId); // Get count of completed pomodoros for a task
+    QList<QVariantMap> getPomodoroStats(int taskId); // Get detailed pomodoro statistics for a task
 
 signals:
     void taskUpdated(const QVariantMap &taskData);

@@ -10,7 +10,6 @@
 #include <QLabel>
 #include <QCryptographicHash>
 
-
 ProfilePage::ProfilePage(int userId, QWidget *parent)
     : BasePage(parent), m_userId(userId)
 {
@@ -89,6 +88,7 @@ void ProfilePage::setupUi()
     m_createdLabel = new QLabel(profilePage);
     m_emailEdit = new QLineEdit(profilePage);
     m_saveButton = new QPushButton("Save Changes", profilePage);
+    m_logoutButton = new QPushButton("Logout", profilePage);
 
     profileLayout->addWidget(new QLabel("Username:", profilePage));
     profileLayout->addWidget(m_usernameLabel);
@@ -97,10 +97,12 @@ void ProfilePage::setupUi()
     profileLayout->addWidget(new QLabel("Registration Date:", profilePage));
     profileLayout->addWidget(m_createdLabel);
     profileLayout->addWidget(m_saveButton);
+    profileLayout->addWidget(m_logoutButton);
     profileLayout->addStretch();
     profilePage->setLayout(profileLayout);
 
     connect(m_saveButton, &QPushButton::clicked, this, &ProfilePage::onSaveClicked);
+    connect(m_logoutButton, &QPushButton::clicked, this, &ProfilePage::onLogoutClicked);
 
     // Add all pages to the stack
     m_stack->addWidget(loginPage);     // Index 0: login page
@@ -197,4 +199,20 @@ void ProfilePage::onShowSignUpClicked()
     m_stack->setCurrentIndex(1); // Switch to sign up page
     m_loginUsername->clear();
     m_loginPassword->clear();
+}
+
+void ProfilePage::onLogoutClicked()
+{
+    int result = QMessageBox::question(this, "Logout", "Are you sure you want to logout?",
+                                     QMessageBox::Yes | QMessageBox::No);
+    if (result == QMessageBox::Yes) {
+        qDebug() << "User confirmed logout";
+        // Clear any saved credentials
+        QSettings settings;
+        settings.remove("auth/username");
+        settings.remove("auth/password");
+        settings.remove("auth/remember");
+        
+        emit logoutRequested();
+    }
 }
